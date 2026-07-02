@@ -1,0 +1,18 @@
+{
+  "frame": {
+    "width": 1080,
+    "height": 1920
+  },
+  "dot": {
+    "x": 520,
+    "y": 792,
+    "width": 22,
+    "height": 23
+  },
+  "branch": {
+    "x": 453,
+    "y": 862,
+    "width": 176,
+    "height": 260
+  }
+}

@@ -8,7 +8,7 @@ export const COMPS = {
   fourFive: { width: 1080, height: 1350 } as CompSize,
 };
 
-export const SOURCE_FRAME = { width: 1080, height: 1919 };
+export const SOURCE_FRAME = { width: 1080, height: 1920 };
 
 export const placeSource = (comp: CompSize) => ({
   offsetX: (comp.width - SOURCE_FRAME.width) / 2,
