@@ -1,34 +1,32 @@
-import { Composition } from 'remotion';
-import { AbsoluteFill } from 'remotion';
-import { PALETTE } from './system/palette';
+import { Composition, Still } from 'remotion';
 import { COMPS, DURATION, FPS } from './system/frames';
-import { DitherLayer } from './system/DitherLayer';
-import { TraceOverlay } from './days/001-branch/TraceOverlay';
-import layout from '../public/001/layout.json';
-
-const Placeholder = () => (
-  <AbsoluteFill style={{ backgroundColor: PALETTE.paper }}>
-    <DitherLayer />
-  </AbsoluteFill>
-);
+import { CardStill, Scene } from './days/001-branch/Scene';
 
 export const Root = () => (
   <>
     <Composition
       id="Day001-16x9"
-      component={Placeholder}
+      component={Scene}
+      defaultProps={{ comp: COMPS.sixteenNine }}
       durationInFrames={DURATION}
       fps={FPS}
       width={COMPS.sixteenNine.width}
       height={COMPS.sixteenNine.height}
     />
     <Composition
-      id="TraceOverlay"
-      component={TraceOverlay}
-      durationInFrames={1}
+      id="Day001-4x5"
+      component={Scene}
+      defaultProps={{ comp: COMPS.fourFive }}
+      durationInFrames={DURATION}
       fps={FPS}
-      width={layout.branch.width * 4}
-      height={layout.branch.height * 4}
+      width={COMPS.fourFive.width}
+      height={COMPS.fourFive.height}
+    />
+    <Still
+      id="Day001-Card"
+      component={CardStill}
+      width={COMPS.fourFive.width}
+      height={COMPS.fourFive.height}
     />
   </>
 );
