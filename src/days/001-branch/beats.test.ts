@@ -16,8 +16,8 @@ test('stem draws only within its beat', () => {
 
 test('twigs stagger: later twig starts later, all finish by 150', () => {
   const f = 100;
-  assert.ok(twigProgress(f, 0) > twigProgress(f, 5));
-  for (let i = 0; i < 6; i++) {
+  assert.ok(twigProgress(f, 0) > twigProgress(f, 6));
+  for (let i = 0; i < BEATS.twigs.count; i++) {
     assert.equal(twigProgress(89, i), 0);
     assert.equal(twigProgress(150, i), 1);
   }

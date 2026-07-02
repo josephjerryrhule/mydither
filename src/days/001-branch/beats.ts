@@ -9,7 +9,7 @@ const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
 
 export const BEATS = {
   stem: { start: 45, end: 120 },
-  twigs: { start: 90, stagger: 6, dur: 30, count: 6 }, // last twig: 120..150
+  twigs: { start: 90, stagger: 5, dur: 30, count: 7 }, // last twig: 120..150
   dot: { start: 186, convergeEnd: 228, spriteIn: [222, 240] as const },
   breath: { start: 240, end: 300 },
   card: { rise: [300, 330] as const, message: [315, 345] as const, credit: [330, 352] as const },
