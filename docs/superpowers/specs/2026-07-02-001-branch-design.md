@@ -19,7 +19,7 @@ paper-dither texture, same caption card, same export shapes.
 |---|---|
 | Export pipeline | Remotion — programmatic, deterministic mp4/PNG renders |
 | Carousel format | Slide 1: 4:5 video (1080×1350). Slide 2: still caption card (PNG) |
-| Branch asset | Rebuilt as SVG strokes traced from the drawing (enables true growth motion) |
+| Branch asset | **Pixel-perfect:** geometry always comes from the source image's own pixels, never re-drawn. Source raster keyed to ink-alpha, ordered-Bayer dithered offline; growth revealed by SVG stroke masks along hand-traced limb center-lines. Center-lines drive masks only — the visible pixels are the drawing itself. |
 | Audio | Not baked in. Added at post time; credited in the IG caption |
 | Repo structure | Day-folders + shared system (see Architecture) |
 
@@ -92,16 +92,37 @@ that `Root.tsx` registers. Adding a day touches only its folder + one line in
   installed version during implementation; if the shader cannot be
   frame-driven, fall back to seeded param animation — e.g. animating offset/
   scale uniforms per frame).
-- **Dot condensation effect:** masked dither region above the branch tip whose
-  contrast/pixel-size animates from noise-like to solid, cross-fading into a
-  plain SVG circle for the final state.
-- **Branch tracing:** SVG paths hand-traced from the source image, drawn with
-  `strokeDasharray`/`strokeDashoffset` interpolation; twigs use Remotion
-  `spring()` for the percussive snap.
+- **Shader API (verified against @paper-design/shaders-react 0.0.76):** all
+  shaders accept `speed` and `frame` ("Set a frame to get a deterministic
+  result, frames are literally just milliseconds from zero"). `speed={0}` +
+  `frame` derived from `useCurrentFrame()` gives deterministic Remotion output.
+  Procedural `<Dithering />` (shape: simplex/warp/dots/…, type: random/2x2/4x4/
+  8x8 Bayer, size) renders the living paper field.
+- **Branch dithering happens offline, not in the shader:** the branch layer
+  needs SVG mask reveals, which don't compose reliably over a WebGL canvas. A
+  preprocessing script (sharp) keys ink from paper (luminance → alpha),
+  applies the same ordered 8x8 Bayer quantization the shader family uses, and
+  splits the mark into `dot` + `branch` sprites with a layout JSON. The
+  package's `<ImageDithering />` math is reproduced deterministically; the
+  package's procedural `<Dithering />` still runs live as the paper field.
+- **Growth reveal:** sprites placed in an inline SVG, revealed by `<mask>`
+  strokes along hand-traced limb center-lines (`pathLength`-normalized
+  dash-offset interpolation); percussive stagger from Remotion interpolation
+  per twig.
+- **Dot condensation effect:** seeded speck scatter (Remotion `random()`)
+  converging onto the dot position, cross-fading into the dot sprite.
 - **Caption content:** `meta.ts` holds the short message (written in the
   mydither caption voice: no poem, no rhyme; growth / percussiveness /
   ingenuity / natural wonder) and credits (original drawing source, sound
   used — sound credited even though audio is added at post time).
+
+## Global constraints
+
+- **Pixel-perfect match** to the source drawing: the rendered mark's geometry
+  is derived from `assets/001-branch-source.jpeg` pixels (665×1182), never
+  re-drawn by hand or approximated.
+- Palette limited to paper `#F2EFE6`, ink `#1A1817`, card white `#FFFFFF`.
+- All animation values derive from `useCurrentFrame()` — no wall-clock time.
 
 ## Testing / verification
 
