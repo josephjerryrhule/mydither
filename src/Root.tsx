@@ -2,9 +2,12 @@ import { Composition } from 'remotion';
 import { AbsoluteFill } from 'remotion';
 import { PALETTE } from './system/palette';
 import { COMPS, DURATION, FPS } from './system/frames';
+import { DitherLayer } from './system/DitherLayer';
 
 const Placeholder = () => (
-  <AbsoluteFill style={{ backgroundColor: PALETTE.paper }} />
+  <AbsoluteFill style={{ backgroundColor: PALETTE.paper }}>
+    <DitherLayer />
+  </AbsoluteFill>
 );
 
 export const Root = () => (
