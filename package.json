@@ -1,0 +1,24 @@
+{
+  "name": "mydither",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "studio": "remotion studio",
+    "prepare-001": "node scripts/dither-ink.mjs",
+    "test": "tsx --test src/days/001-branch/beats.test.ts && node --test scripts/dither-ink.test.mjs",
+    "render-001": "remotion render Day001-16x9 out/001-16x9.mp4 && remotion render Day001-4x5 out/001-4x5.mp4 && remotion still Day001-Card out/001-card.png"
+  },
+  "dependencies": {
+    "@paper-design/shaders-react": "0.0.76",
+    "@remotion/cli": "4.0.484",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.484"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "sharp": "^0.34.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0"
+  }
+}
