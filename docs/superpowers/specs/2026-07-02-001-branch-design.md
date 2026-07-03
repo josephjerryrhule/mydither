@@ -51,8 +51,8 @@ Secret (every post, Rev 3): one glyph hidden in the dither field —
 shape the living grain runs at a coarser dot size (same two cream tones as
 the field; texture anomaly only, zero color difference). Very faint: users
 must hunt it. Present the whole timeline. Across posts the glyphs accumulate
-into a coupon code for stores to be listed later. Working code draft:
-GROWTH (001 = "G") — Joseph confirms.
+into a coupon code for stores to be listed later. Confirmed code:
+GROWTH (001 = "G") — confirmed 2026-07-03.
 
 Label (Rev 3): two lines only — title + message. No credit line in-frame;
 all credits (drawing source, sound) live in the IG caption.
