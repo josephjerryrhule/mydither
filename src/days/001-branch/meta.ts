@@ -4,6 +4,7 @@ export type Meta = {
   title: string;
   message: string;
   igCaption: string;
+  xCaption: string;
   secret: { char: string; xPct: number; yPct: number; sizePx: number };
 };
 
@@ -28,5 +29,14 @@ export const META: Meta = {
     'day 1 of 6.',
     '',
     '#mydither #motion #dither #minimal #thehunt',
+  ].join('\n'),
+  xCaption: [
+    '001 / branch — day one of a daily motion practice.',
+    'built with @paper dithering shaders + @remotion, deterministic to the frame.',
+    '',
+    'the hunt: one letter hides in each piece’s grain. six days, in order.',
+    'day six, DM the word on IG — shops are holding coupons + gifts.',
+    '',
+    'day 1 of 6.',
   ].join('\n'),
 };
