@@ -42,4 +42,5 @@ Daily motion & design practice. Nature in, dither out. Posted to Instagram.
 ## Render 001
 
 npm run prepare-001 && npm run render-001
-→ out/001-16x9.mp4 · out/001-4x5.mp4 · out/001-card.png
+→ out/001-16x9.mp4 · out/001-4x5.mp4 · out/001-9x16.mp4 (Reel) ·
+out/001-card.png · out/001-hunt.png (hunt-rules slide, carousel slide 1)

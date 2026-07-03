@@ -1,5 +1,6 @@
-import { Composition } from 'remotion';
+import { Composition, Still } from 'remotion';
 import { COMPS, DURATION, FPS } from './system/frames';
+import { HuntCard } from './days/001-branch/HuntCard';
 import { Scene } from './days/001-branch/Scene';
 
 export const Root = () => (
@@ -30,6 +31,12 @@ export const Root = () => (
       fps={FPS}
       width={COMPS.nineSixteen.width}
       height={COMPS.nineSixteen.height}
+    />
+    <Still
+      id="Day001-Hunt"
+      component={HuntCard}
+      width={COMPS.fourFive.width}
+      height={COMPS.fourFive.height}
     />
   </>
 );
