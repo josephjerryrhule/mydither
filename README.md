@@ -17,9 +17,10 @@ Daily motion & design practice. Nature in, dither out. Posted to Instagram.
    - `limbs.ts` — traced limb center-line masks for write-on reveal
    - components (e.g. `Branch.tsx`, `Dot.tsx`, `Secret.tsx`, `TraceOverlay.tsx`)
    - `Scene.tsx` — composes the above into the frame
-4. Register **two** compositions per day in `src/Root.tsx`: `DayNNN-16x9` and
-   `DayNNN-4x5`. There is no separate card composition — the card is a still
-   frame (352) of `DayNNN-4x5`.
+4. Register **three** compositions per day in `src/Root.tsx`: `DayNNN-16x9`,
+   `DayNNN-4x5` (carousel), and `DayNNN-9x16` (Reel — the full 1080×1920 source
+   frame, zero crop; label auto-raises to clear the Reels UI). There is no
+   separate card composition — the card is a still frame (352) of `DayNNN-4x5`.
 5. `npm run studio` to iterate · render via package script
 
 ## System

@@ -38,6 +38,8 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
         width={label.width}
         height={label.height}
         progress={labelIn(frame)}
+        // taller than 3:2 portrait = Reels/story frame; clear IG's bottom UI chrome
+        bottom={comp.height / comp.width > 1.5 ? 250 : 64}
       />
     </AbsoluteFill>
   );

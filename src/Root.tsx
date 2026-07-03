@@ -22,5 +22,14 @@ export const Root = () => (
       width={COMPS.fourFive.width}
       height={COMPS.fourFive.height}
     />
+    <Composition
+      id="Day001-9x16"
+      component={Scene}
+      defaultProps={{ comp: COMPS.nineSixteen }}
+      durationInFrames={DURATION}
+      fps={FPS}
+      width={COMPS.nineSixteen.width}
+      height={COMPS.nineSixteen.height}
+    />
   </>
 );
