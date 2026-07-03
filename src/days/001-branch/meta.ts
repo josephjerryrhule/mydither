@@ -5,6 +5,8 @@ export type Meta = {
   message: string;
   igCaption: string;
   xCaption: string;
+  /** Reply tweet — IG link goes in the thread, not tweet 1 (X buries external links) */
+  xThread: string[];
   secret: { char: string; xPct: number; yPct: number; sizePx: number };
 };
 
@@ -39,4 +41,13 @@ export const META: Meta = {
     '',
     'day 1 of 6.',
   ].join('\n'),
+  xThread: [
+    [
+      'yes, the letter is literally in this video. pause it. squint.',
+      'zoom in and whisper “enhance” — it works, I checked.',
+      '',
+      'full rules + the DM box live on IG →',
+      '[ig post link]',
+    ].join('\n'),
+  ],
 };
