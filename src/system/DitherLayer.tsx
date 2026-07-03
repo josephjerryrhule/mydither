@@ -5,7 +5,9 @@ import { useCurrentFrame } from 'remotion';
 import { FPS } from './frames';
 import { PALETTE } from './palette';
 
-export const DitherLayer = ({ drift = 0.15 }: { drift?: number }) => {
+export const DEFAULT_DRIFT = 0.15;
+
+export const DitherLayer = ({ drift = DEFAULT_DRIFT }: { drift?: number }) => {
   const frame = useCurrentFrame();
   const shaderMs = (frame / FPS) * 1000 * drift;
   return (

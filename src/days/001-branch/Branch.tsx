@@ -5,12 +5,14 @@ import layout from '../../../public/001/layout.json';
 import { stemProgress, twigProgress } from './beats';
 import { STEM, TWIGS } from './limbs';
 
+const INK_SPRITES = ['001/branch.png', '001/dot.png', '001/secret.png'];
+
 export const useInkPreload = () => {
   const [handle] = useState(() => delayRender('preload ink sprites'));
   useEffect(() => {
     let done = 0;
-    const loaded = () => { if (++done === 2) continueRender(handle); };
-    for (const f of ['001/branch.png', '001/dot.png']) {
+    const loaded = () => { if (++done === INK_SPRITES.length) continueRender(handle); };
+    for (const f of INK_SPRITES) {
       const img = new Image();
       img.onload = loaded;
       img.onerror = loaded; // fail visible, not hung — sprite 404s show as blank

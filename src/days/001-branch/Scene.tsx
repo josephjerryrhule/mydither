@@ -1,5 +1,6 @@
 // src/days/001-branch/Scene.tsx
-import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, staticFile, useCurrentFrame } from 'remotion';
+import label from '../../../public/001/label.json';
 import { DitherLayer } from '../../system/DitherLayer';
 import { GalleryLabel } from '../../system/GalleryLabel';
 import { placeSource, type CompSize } from '../../system/frames';
@@ -32,7 +33,12 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
           <Dot />
         </div>
       </div>
-      <GalleryLabel progress={labelIn(frame)} />
+      <GalleryLabel
+        src={staticFile('001/label.png')}
+        width={label.width}
+        height={label.height}
+        progress={labelIn(frame)}
+      />
     </AbsoluteFill>
   );
 };

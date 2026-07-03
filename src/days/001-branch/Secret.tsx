@@ -5,15 +5,14 @@
 // Invisible at a glance; a coarse-dot 'G' when the still is paused and hunted.
 import { Dithering } from '@paper-design/shaders-react';
 import { staticFile, useCurrentFrame } from 'remotion';
+import { DEFAULT_DRIFT } from '../../system/DitherLayer';
 import { FPS, SOURCE_FRAME } from '../../system/frames';
 import { PALETTE } from '../../system/palette';
 import { META } from './meta';
 
-const DRIFT = 0.15; // matches DitherLayer's living-paper drift
-
 export const Secret = () => {
   const frame = useCurrentFrame();
-  const shaderMs = (frame / FPS) * 1000 * DRIFT;
+  const shaderMs = (frame / FPS) * 1000 * DEFAULT_DRIFT;
   const size = META.secret.sizePx;
   return (
     <div

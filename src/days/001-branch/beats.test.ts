@@ -5,6 +5,7 @@ import {
   BEATS, stemProgress, twigProgress, dotOpacity, dotRise,
   breathScale, pushInScale, labelIn,
 } from './beats';
+import { TWIGS } from './limbs';
 
 test('stem draws only within its beat', () => {
   assert.equal(stemProgress(0), 0);
@@ -49,4 +50,8 @@ test('label fades in 300–345', () => {
   assert.equal(labelIn(300), 0);
   assert.equal(labelIn(345), 1);
   assert.ok(labelIn(320) > 0 && labelIn(320) < 1);
+});
+
+test('BEATS.twigs.count matches traced limbs', () => {
+  assert.equal(TWIGS.length, BEATS.twigs.count);
 });
