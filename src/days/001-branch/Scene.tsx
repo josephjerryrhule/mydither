@@ -1,13 +1,13 @@
 // src/days/001-branch/Scene.tsx
-import { AbsoluteFill, Freeze, useCurrentFrame } from 'remotion';
-import { CaptionCard } from '../../system/CaptionCard';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { DitherLayer } from '../../system/DitherLayer';
-import { COMPS, placeSource, type CompSize } from '../../system/frames';
+import { GalleryLabel } from '../../system/GalleryLabel';
+import { placeSource, type CompSize } from '../../system/frames';
 import { PALETTE } from '../../system/palette';
 import { Branch, useInkPreload } from './Branch';
-import { breathScale, cardRise, creditIn, messageIn, pushInScale } from './beats';
+import { breathScale, labelIn, pushInScale } from './beats';
 import { Dot } from './Dot';
-import { META } from './meta';
+import { Secret } from './Secret';
 
 export const Scene = ({ comp }: { comp: CompSize }) => {
   useInkPreload();
@@ -27,23 +27,12 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
       >
         <DitherLayer />
         <div style={{ position: 'absolute', left: offsetX, top: offsetY }}>
+          <Secret />
           <Branch />
           <Dot />
         </div>
       </div>
-      <CaptionCard
-        rise={cardRise(frame)}
-        messageIn={messageIn(frame)}
-        creditIn={creditIn(frame)}
-        message={META.message}
-        creditLine={META.creditLine}
-      />
+      <GalleryLabel progress={labelIn(frame)} />
     </AbsoluteFill>
   );
 };
-
-export const CardStill = () => (
-  <Freeze frame={350}>
-    <Scene comp={COMPS.fourFive} />
-  </Freeze>
-);

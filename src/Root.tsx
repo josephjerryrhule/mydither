@@ -1,6 +1,6 @@
-import { Composition, Still } from 'remotion';
+import { Composition } from 'remotion';
 import { COMPS, DURATION, FPS } from './system/frames';
-import { CardStill, Scene } from './days/001-branch/Scene';
+import { Scene } from './days/001-branch/Scene';
 
 export const Root = () => (
   <>
@@ -19,12 +19,6 @@ export const Root = () => (
       defaultProps={{ comp: COMPS.fourFive }}
       durationInFrames={DURATION}
       fps={FPS}
-      width={COMPS.fourFive.width}
-      height={COMPS.fourFive.height}
-    />
-    <Still
-      id="Day001-Card"
-      component={CardStill}
       width={COMPS.fourFive.width}
       height={COMPS.fourFive.height}
     />

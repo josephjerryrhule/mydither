@@ -2,8 +2,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import {
-  BEATS, stemProgress, twigProgress, dotConvergence, dotSpriteOpacity,
-  breathScale, pushInScale, cardRise, messageIn, creditIn,
+  BEATS, stemProgress, twigProgress, dotOpacity, dotRise,
+  breathScale, pushInScale, labelIn,
 } from './beats';
 
 test('stem draws only within its beat', () => {
@@ -23,11 +23,13 @@ test('twigs stagger: later twig starts later, all finish by 150', () => {
   }
 });
 
-test('dot: convergence completes, sprite fades in at the end', () => {
-  assert.equal(dotConvergence(186), 0);
-  assert.equal(dotConvergence(228), 1);
-  assert.equal(dotSpriteOpacity(220), 0);
-  assert.equal(dotSpriteOpacity(240), 1);
+test('dot rises in seamlessly: opacity 0→1, rise 14→0 over 186–246', () => {
+  assert.equal(dotOpacity(186), 0);
+  assert.equal(dotOpacity(246), 1);
+  assert.ok(dotOpacity(216) > 0 && dotOpacity(216) < 1);
+  assert.ok(Math.abs(dotRise(186) - 14) < 1e-9);
+  assert.ok(Math.abs(dotRise(246)) < 1e-9);
+  assert.ok(dotRise(216) > 0 && dotRise(216) < 14);
 });
 
 test('breath peaks mid-beat and returns to 1', () => {
@@ -43,11 +45,8 @@ test('push-in is monotonic 1 → 1.03', () => {
   assert.ok(pushInScale(180) > 1 && pushInScale(180) < 1.03);
 });
 
-test('card rises then text settles', () => {
-  assert.equal(cardRise(300), 1);
-  assert.equal(cardRise(330), 0);
-  assert.equal(messageIn(315), 0);
-  assert.equal(messageIn(345), 1);
-  assert.equal(creditIn(330), 0);
-  assert.equal(creditIn(352), 1);
+test('label fades in 300–345', () => {
+  assert.equal(labelIn(300), 0);
+  assert.equal(labelIn(345), 1);
+  assert.ok(labelIn(320) > 0 && labelIn(320) < 1);
 });

@@ -42,12 +42,18 @@ timeline with a tighter crop; the caption card sits lower in frame.
 | 0.0–1.5s | paper breathes | Empty cream field. Dither grain drifts almost imperceptibly. No subject. |
 | 1.5–4.0s | stem | Single stroke draws upward from center — stroke-dash reveal. Slow start, confident middle, tiny overshoot at the tip, settle. Hand-drawn wobble preserved. |
 | 3.0–6.2s | twigs (percussive) | Six twigs snap out in stagger, alternating sides, ~180ms apart, overlapping the stem's finish. Each twig: spring out fast, settle. The drum line of the piece. |
-| 6.2–8.0s | the dot | Not drawn. Dither noise above the tip condenses — scattered grain pulls inward and becomes the dot. Potential arriving out of static. |
+| 6.2–8.2s | the dot (tomorrow) | Not drawn, not particles. The dot rises into place like a small sun — drifts up ~14px into its final position while fading in, slow and inevitable. Tomorrow arriving, seamless. (Rev 2: replaced the original speck-convergence — read as "exploding in reverse".) |
 | 8.0–10.0s | hold + breath | One breath: scale 1.000 → 1.012 → 1.000. Imperceptible camera push-in runs the whole shot. Grain keeps drifting. |
-| 10.0–12.0s | the card | White box rises from the bottom edge. Message fades in with a tracking settle (no typewriter). Credit line small beneath. Hold. End frame doubles as the still. |
+| 10.0–11.5s | the label | No card. A small dithered gallery label fades in bottom-left (title / message / credit), like an exhibition placard — very small, quiet, ink on paper. End frame doubles as the still. (Rev 2: replaced the white caption card.) |
 
-Loop note: the 16:9 export may drop the card beat for a seamless loop (dot
-dissolves back into grain). The carousel video keeps the card ending.
+Secret (every post, Rev 2): one glyph hidden in the dither field — a
+cream-ghost dithered character (barely darker than the grain), present the
+whole timeline, findable when you pause and look. Across posts the glyphs
+accumulate into a coupon code for stores to be listed later. Working code
+draft: GROWTH (001 = "G") — Joseph confirms.
+
+Loop note: the 16:9 export may drop the label beat for a seamless loop (dot
+dissolves back into grain). The carousel video keeps the label ending.
 
 Sound direction (chosen at post time): dry and organic — pencil scratch, wood
 tick, low room tone.
@@ -72,11 +78,20 @@ mydither/
 └─ out/                      # rendered mp4s / PNGs (gitignored)
 ```
 
-**Compositions per day (naming pattern):**
+**Compositions per day (naming pattern, Rev 2):**
 
 - `NNN-16x9` — 1920×1080 mp4
 - `NNN-4x5` — 1080×1350 mp4 (carousel slide 1)
-- `NNN-card` — 1080×1350 PNG still (carousel slide 2)
+- carousel slide 2 = PNG still rendered from `NNN-4x5` at a late frame
+  (`remotion still DayNNN-4x5 --frame=352`) — no separate Still composition
+  (Remotion 4.0.484 clamps `Freeze` inside a 1-frame `Still` to frame 0)
+
+**Label & secret sprites (Rev 2):** a per-day script (`scripts/dither-label.mts`,
+run with tsx so it imports META directly) rasterizes (a) the gallery label —
+title / message / credit, small monospace, ink — and (b) the secret glyph at
+cream-ghost contrast, through the SAME luminance-key + ordered-8x8-Bayer
+pipeline as the ink sprites, at display resolution (never resized after
+dithering). Outputs `public/001/label.png`, `public/001/secret.png` + dims JSON.
 
 **Unit boundaries:** `system/` components know nothing about specific days.
 A day folder consumes system components and exports composition definitions

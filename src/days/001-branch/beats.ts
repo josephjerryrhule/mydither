@@ -10,9 +10,9 @@ const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
 export const BEATS = {
   stem: { start: 45, end: 120 },
   twigs: { start: 90, stagger: 5, dur: 30, count: 7 }, // last twig: 120..150
-  dot: { start: 186, convergeEnd: 228, spriteIn: [222, 240] as const },
+  dot: { start: 186, end: 246 },
   breath: { start: 240, end: 300 },
-  card: { rise: [300, 330] as const, message: [315, 345] as const, credit: [330, 352] as const },
+  label: { start: 300, end: 345 },
 } as const;
 
 export const stemProgress = (f: number) =>
@@ -23,11 +23,12 @@ export const twigProgress = (f: number, i: number) => {
   return easeOutQuint(norm(f, start, start + BEATS.twigs.dur));
 };
 
-export const dotConvergence = (f: number) =>
-  easeOutCubic(norm(f, BEATS.dot.start, BEATS.dot.convergeEnd));
+// Tomorrow rising: fades in slow and inevitable while drifting the last 14px up.
+export const dotOpacity = (f: number) =>
+  easeInOutSine(norm(f, BEATS.dot.start, BEATS.dot.end));
 
-export const dotSpriteOpacity = (f: number) =>
-  norm(f, BEATS.dot.spriteIn[0], BEATS.dot.spriteIn[1]);
+export const dotRise = (f: number) =>
+  14 * (1 - easeOutCubic(norm(f, BEATS.dot.start, BEATS.dot.end)));
 
 export const breathScale = (f: number) => {
   const t = norm(f, BEATS.breath.start, BEATS.breath.end);
@@ -36,11 +37,5 @@ export const breathScale = (f: number) => {
 
 export const pushInScale = (f: number) => 1 + 0.03 * easeInOutSine(norm(f, 0, 360));
 
-export const cardRise = (f: number) =>
-  1 - easeOutCubic(norm(f, BEATS.card.rise[0], BEATS.card.rise[1]));
-
-export const messageIn = (f: number) =>
-  norm(f, BEATS.card.message[0], BEATS.card.message[1]);
-
-export const creditIn = (f: number) =>
-  norm(f, BEATS.card.credit[0], BEATS.card.credit[1]);
+export const labelIn = (f: number) =>
+  easeOutCubic(norm(f, BEATS.label.start, BEATS.label.end));
