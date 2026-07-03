@@ -13,11 +13,9 @@ const INK_LUM = 60;    // below this = pure mark
 const GATE_LO = 0.12;  // kill antialias fringe
 const GATE_HI = 0.85;  // solidify glyph cores
 const INK = [0x1a, 0x18, 0x17];   // gallery-label ink
-const GHOST = [0xe4, 0xdf, 0xce]; // secret: barely darker than grain #E7E3D6.
-// Tuned lighter from the #DDD6C2 default: at 0.70/0.24 the glyph sits on a light
-// grain cloud (~lum 237, near paper), where a big bold letter reads casually even
-// at low contrast. Raised to ~lum 223 so it reads as a faint smudge — discoverable
-// on a paused/zoomed still, not casually. Darker bound #D6CFB9 if undiscoverable.
+// The secret is no longer a colored ghost sprite. It is emitted as a pure alpha
+// mask (opaque glyph, transparent field) and CSS-masks a coarse dither patch at
+// runtime — the letter is made of the living dots themselves, no color anomaly.
 
 const BAYER8 = [
   [0, 32, 8, 40, 2, 34, 10, 42],
@@ -85,22 +83,62 @@ const ditherSvg = async (
   return { W, H, on };
 };
 
+// Rasterize SVG to a pure alpha mask: opaque where the glyph is, transparent
+// elsewhere. No Bayer, no color — the coverage becomes the CSS mask alpha and
+// the dots come from the shader patch underneath. Anti-aliased edges are fine.
+const rasterizeMask = async (svg: string, pngPath: string, jsonPath: string) => {
+  const { data, info } = await sharp(Buffer.from(svg))
+    .flatten({ background: '#ffffff' })
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width: W, height: H, channels: C } = info;
+
+  const px = Buffer.alloc(W * H * 4);
+  let on = 0;
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * C;
+      const lum = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+      let a = (255 - lum) / 255; // dark glyph → opaque; white field → transparent
+      a = Math.min(1, Math.max(0, a));
+      const o = (y * W + x) * 4;
+      px[o] = 255;
+      px[o + 1] = 255;
+      px[o + 2] = 255;
+      px[o + 3] = Math.round(a * 255);
+      if (a > 0.5) on++;
+    }
+  }
+
+  if (on === 0) {
+    throw new Error(
+      `${pngPath}: 0 opaque pixels — SVG text likely failed to rasterize (font resolution). BLOCKED.`,
+    );
+  }
+
+  await sharp(px, { raw: { width: W, height: H, channels: 4 } })
+    .png({ compressionLevel: 9 })
+    .toFile(pngPath);
+  writeFileSync(jsonPath, JSON.stringify({ width: W, height: H }, null, 2));
+  return { W, H, on };
+};
+
 mkdirSync(OUT_DIR, { recursive: true });
 
-// 1. Gallery placard — three lines of chunky monospace, ink on paper.
+// 1. Gallery placard — two lines of chunky monospace, ink on paper.
 const FONT = `'Courier New', Courier, monospace`;
 const LABEL_W = 640;
-const LABEL_H = 120;
+const LABEL_H = 76;
 const labelSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${LABEL_W}" height="${LABEL_H}" viewBox="0 0 ${LABEL_W} ${LABEL_H}">
   <rect width="${LABEL_W}" height="${LABEL_H}" fill="#ffffff"/>
   <g font-family="${FONT}" fill="#000000">
     <text x="0" y="22" font-size="21" font-weight="bold" letter-spacing="2">${escapeXml(META.title.toUpperCase())}</text>
     <text x="0" y="56" font-size="17">${escapeXml(META.message)}</text>
-    <text x="0" y="88" font-size="13" letter-spacing="1.5">${escapeXml(META.creditLine.toUpperCase())}</text>
   </g>
 </svg>`;
 
-// 2. Secret glyph — one big bold character centered, ghost-cream.
+// 2. Secret glyph — one big bold character centered, emitted as an alpha mask.
 const S = META.secret.sizePx;
 const glyphSize = Math.round(S * 0.85);
 const secretSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">
@@ -109,8 +147,8 @@ const secretSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="
 </svg>`;
 
 const label = await ditherSvg(labelSvg, INK, `${OUT_DIR}/label.png`, `${OUT_DIR}/label.json`);
-const secret = await ditherSvg(secretSvg, GHOST, `${OUT_DIR}/secret.png`, `${OUT_DIR}/secret.json`);
+const secret = await rasterizeMask(secretSvg, `${OUT_DIR}/secret.png`, `${OUT_DIR}/secret.json`);
 
 console.log(
-  `label ${label.W}x${label.H} (${label.on} ink px) | secret '${META.secret.char}' ${secret.W}x${secret.H} (${secret.on} ghost px)`,
+  `label ${label.W}x${label.H} (${label.on} ink px) | secret mask '${META.secret.char}' ${secret.W}x${secret.H} (${secret.on} opaque px)`,
 );

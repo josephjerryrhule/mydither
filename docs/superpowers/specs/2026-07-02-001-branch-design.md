@@ -46,11 +46,16 @@ timeline with a tighter crop; the caption card sits lower in frame.
 | 8.0–10.0s | hold + breath | One breath: scale 1.000 → 1.012 → 1.000. Imperceptible camera push-in runs the whole shot. Grain keeps drifting. |
 | 10.0–11.5s | the label | No card. A small dithered gallery label fades in bottom-left (title / message / credit), like an exhibition placard — very small, quiet, ink on paper. End frame doubles as the still. (Rev 2: replaced the white caption card.) |
 
-Secret (every post, Rev 2): one glyph hidden in the dither field — a
-cream-ghost dithered character (barely darker than the grain), present the
-whole timeline, findable when you pause and look. Across posts the glyphs
-accumulate into a coupon code for stores to be listed later. Working code
-draft: GROWTH (001 = "G") — Joseph confirms.
+Secret (every post, Rev 3): one glyph hidden in the dither field —
+**integrated into the dots themselves**, not overlaid. Within the glyph's
+shape the living grain runs at a coarser dot size (same two cream tones as
+the field; texture anomaly only, zero color difference). Very faint: users
+must hunt it. Present the whole timeline. Across posts the glyphs accumulate
+into a coupon code for stores to be listed later. Working code draft:
+GROWTH (001 = "G") — Joseph confirms.
+
+Label (Rev 3): two lines only — title + message. No credit line in-frame;
+all credits (drawing source, sound) live in the IG caption.
 
 Loop note: the 16:9 export may drop the label beat for a seamless loop (dot
 dissolves back into grain). The carousel video keeps the label ending.
