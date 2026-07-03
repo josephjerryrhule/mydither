@@ -1,7 +1,9 @@
 // scripts/dither-hunt.mts
-// The hunt-rules slide text sprite — full-slide (1080×1350) dithered monospace
-// block, same recipe as dither-label: rasterize SVG, key luminance→alpha,
+// Hunt-rules slide text sprites — full-slide (1080×1350) dithered monospace
+// blocks, same recipe as dither-label: rasterize SVG, key luminance→alpha,
 // ordered 8x8 Bayer to binary. Dither at final display resolution.
+// Emits two sprites: hunt.png (Joseph's own slide) and hunt-shop.png
+// (partner-shop version — shop voice, points audiences at @meet.joes).
 import sharp from 'sharp';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
@@ -32,8 +34,76 @@ const H = 1350;
 const LEFT = 120;
 const LEAD = 40; // body leading
 
+type Line = string | null | { text: string; bold: true };
+
+const buildSvg = (body: Line[]) => {
+  let y = 470; // body start; title sits above
+  const lines = body
+    .map((line) => {
+      if (line === null) {
+        y += LEAD / 2;
+        return '';
+      }
+      const text = typeof line === 'string' ? line : line.text;
+      const bold = typeof line === 'object' && line.bold ? ' font-weight="bold"' : '';
+      const t = `<text x="${LEFT}" y="${y}" font-size="22" letter-spacing="1"${bold}>${escapeXml(text)}</text>`;
+      y += LEAD;
+      return t;
+    })
+    .join('\n    ');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+  <rect width="${W}" height="${H}" fill="#ffffff"/>
+  <g font-family="${FONT}" fill="#000000">
+    <text x="${LEFT}" y="390" font-size="34" font-weight="bold" letter-spacing="6">THE HUNT</text>
+    ${lines}
+  </g>
+</svg>`;
+};
+
+const ditherSlide = async (svg: string, name: string) => {
+  const { data, info } = await sharp(Buffer.from(svg))
+    .flatten({ background: '#ffffff' })
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width: RW, height: RH, channels: C } = info;
+
+  const px = Buffer.alloc(RW * RH * 4);
+  let on = 0;
+  for (let yy = 0; yy < RH; yy++) {
+    for (let xx = 0; xx < RW; xx++) {
+      const i = (yy * RW + xx) * C;
+      const lum = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+      let a = (PAPER_LUM - lum) / (PAPER_LUM - INK_LUM);
+      a = Math.min(1, Math.max(0, a));
+      if (a < GATE_LO) a = 0;
+      if (a > GATE_HI) a = 1;
+      if (a * 64 > BAYER8[yy % 8][xx % 8] + 0.5) {
+        const o = (yy * RW + xx) * 4;
+        px[o] = INK[0];
+        px[o + 1] = INK[1];
+        px[o + 2] = INK[2];
+        px[o + 3] = 255;
+        on++;
+      }
+    }
+  }
+
+  if (on === 0) {
+    throw new Error(`${name}.png: 0 lit pixels — SVG text failed to rasterize. BLOCKED.`);
+  }
+
+  await sharp(px, { raw: { width: RW, height: RH, channels: 4 } })
+    .png({ compressionLevel: 9 })
+    .toFile(`${OUT_DIR}/${name}.png`);
+  writeFileSync(`${OUT_DIR}/${name}.json`, JSON.stringify({ width: RW, height: RH }, null, 2));
+  console.log(`${name} ${RW}x${RH} (${on} ink px)`);
+};
+
+const HANDLE = '@meet.joes';
+
 // Approved copy — signed off 2026-07-03.
-const BODY: (string | null)[] = [
+const OWN: Line[] = [
   'six days. six pieces.',
   'one letter hides in the grain',
   'of each — pause. look closer.',
@@ -46,65 +116,26 @@ const BODY: (string | null)[] = [
   'who get it right.',
   'shops revealed on the final day.',
   null,
+  { text: '001 starts it.', bold: true },
 ];
-const CLOSER = '001 starts it.';
 
-let y = 470; // body start; title sits above
-const bodyLines = BODY.map((line) => {
-  if (line === null) {
-    y += LEAD / 2;
-    return '';
-  }
-  const t = `<text x="${LEFT}" y="${y}" font-size="22" letter-spacing="1">${escapeXml(line)}</text>`;
-  y += LEAD;
-  return t;
-}).join('\n    ');
-const closerY = y;
-
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  <rect width="${W}" height="${H}" fill="#ffffff"/>
-  <g font-family="${FONT}" fill="#000000">
-    <text x="${LEFT}" y="390" font-size="34" font-weight="bold" letter-spacing="6">THE HUNT</text>
-    ${bodyLines}
-    <text x="${LEFT}" y="${closerY}" font-size="22" font-weight="bold" letter-spacing="1">${escapeXml(CLOSER)}</text>
-  </g>
-</svg>`;
-
-const { data, info } = await sharp(Buffer.from(svg))
-  .flatten({ background: '#ffffff' })
-  .removeAlpha()
-  .raw()
-  .toBuffer({ resolveWithObject: true });
-const { width: RW, height: RH, channels: C } = info;
-
-const px = Buffer.alloc(RW * RH * 4);
-let on = 0;
-for (let yy = 0; yy < RH; yy++) {
-  for (let xx = 0; xx < RW; xx++) {
-    const i = (yy * RW + xx) * C;
-    const lum = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
-    let a = (PAPER_LUM - lum) / (PAPER_LUM - INK_LUM);
-    a = Math.min(1, Math.max(0, a));
-    if (a < GATE_LO) a = 0;
-    if (a > GATE_HI) a = 1;
-    if (a * 64 > BAYER8[yy % 8][xx % 8] + 0.5) {
-      const o = (yy * RW + xx) * 4;
-      px[o] = INK[0];
-      px[o + 1] = INK[1];
-      px[o + 2] = INK[2];
-      px[o + 3] = 255;
-      on++;
-    }
-  }
-}
-
-if (on === 0) {
-  throw new Error('hunt.png: 0 lit pixels — SVG text failed to rasterize. BLOCKED.');
-}
+// Partner-shop version — shop voice, redirects to Joseph's profile.
+const SHOP: Line[] = [
+  'we hid something.',
+  null,
+  `six days. six pieces. over at`,
+  `${HANDLE} — one letter in the`,
+  'grain of each. pause. look closer.',
+  null,
+  'collect all six, in order.',
+  `day six: DM ${HANDLE} the word.`,
+  null,
+  "get it right — we're holding",
+  'coupons + gifts for you.',
+  null,
+  { text: "it's already started.", bold: true },
+];
 
 mkdirSync(OUT_DIR, { recursive: true });
-await sharp(px, { raw: { width: RW, height: RH, channels: 4 } })
-  .png({ compressionLevel: 9 })
-  .toFile(`${OUT_DIR}/hunt.png`);
-writeFileSync(`${OUT_DIR}/hunt.json`, JSON.stringify({ width: RW, height: RH }, null, 2));
-console.log(`hunt ${RW}x${RH} (${on} ink px)`);
+await ditherSlide(buildSvg(OWN), 'hunt');
+await ditherSlide(buildSvg(SHOP), 'hunt-shop');

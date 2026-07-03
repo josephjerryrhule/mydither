@@ -1,6 +1,6 @@
 import { Composition, Still } from 'remotion';
 import { COMPS, DURATION, FPS } from './system/frames';
-import { HuntCard } from './days/001-branch/HuntCard';
+import { HuntCard, HuntShopCard, HuntShopStory } from './days/001-branch/HuntCard';
 import { Scene } from './days/001-branch/Scene';
 
 export const Root = () => (
@@ -37,6 +37,18 @@ export const Root = () => (
       component={HuntCard}
       width={COMPS.fourFive.width}
       height={COMPS.fourFive.height}
+    />
+    <Still
+      id="Day001-HuntShop"
+      component={HuntShopCard}
+      width={COMPS.fourFive.width}
+      height={COMPS.fourFive.height}
+    />
+    <Still
+      id="Day001-HuntShop-Story"
+      component={HuntShopStory}
+      width={COMPS.nineSixteen.width}
+      height={COMPS.nineSixteen.height}
     />
   </>
 );
