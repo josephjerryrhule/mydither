@@ -141,7 +141,8 @@ that `Root.tsx` registers. Adding a day touches only its folder + one line in
 - **Pixel-perfect match** to the source drawing: the rendered mark's geometry
   is derived from `assets/001-branch-source.jpeg` pixels (665×1182), never
   re-drawn by hand or approximated.
-- Palette limited to paper `#F2EFE6`, ink `#1A1817`, card white `#FFFFFF`.
+- Palette limited to paper `#F2EFE6`, ink `#1A1817`, grain front `#E7E3D6`
+  (card white removed in Rev 3 — no cards in frame).
 - All animation values derive from `useCurrentFrame()` — no wall-clock time.
 
 ## Testing / verification

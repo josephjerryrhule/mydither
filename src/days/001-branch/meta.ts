@@ -11,7 +11,7 @@ export const META: Meta = {
   id: '001',
   title: '001 / branch',
   message: 'one line up, seven honest detours. the dot is tomorrow.',
-  secret: { char: 'G', xPct: 0.70, yPct: 0.24, sizePx: 96 },
+  secret: { char: 'G', xPct: 0.70, yPct: 0.27, sizePx: 96 },
   igCaption: [
     '001 — branch.',
     '',
