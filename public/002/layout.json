@@ -1,0 +1,24 @@
+{
+  "frame": {
+    "width": 1080,
+    "height": 1920
+  },
+  "line": {
+    "x": 76,
+    "y": 928,
+    "width": 920,
+    "height": 29
+  },
+  "dot": {
+    "x": 510,
+    "y": 909,
+    "width": 43,
+    "height": 52
+  },
+  "reflection": {
+    "x": 511,
+    "y": 956,
+    "width": 34,
+    "height": 178
+  }
+}
