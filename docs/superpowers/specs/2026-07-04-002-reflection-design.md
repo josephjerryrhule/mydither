@@ -20,8 +20,8 @@ grain, pixel-perfect rule, deterministic-to-the-frame.
 |---|---|
 | Source | `assets/002-reflection-source.jpg` (736×736 square). Resized to 1080 wide → 1080×1080, centered vertically in the shared 1080×1920 source frame. Horizon lands at the frame's true vertical center (y≈960). |
 | Extraction | **Pixel-perfect**, same recipe as 001: luminance-key → ordered 8×8 Bayer → binary RGBA sprites via `sharp`, split by empty-row bands. Never re-drawn. |
-| Sprites | `line` (horizon), `dot` (on the line), and the **reflection fragments** — the trail's dabs are already separated by horizontal gaps, so the band splitter yields them top→bottom for free. `dot` is carved out of the line band by its center-column density. |
-| Reflection motion | **Echo drip** (chosen): the dot lands → its reflection assembles downward from the surface, fragment by fragment, dwindling. Percussive top→bottom stagger = this piece's drum line. Damps to rest so the still is crisp. |
+| Sprites | `line` (horizon), `dot` (on the line), `reflection` (the trail). **Cuts derived from structure** (probe 2026-07-04): the line = the contiguous wide rows (span >300px); the dot = the centered blob riding the line, its columns **punched** from the line sprite so it can drop into the gap and seat seamlessly; the reflection = the narrow centered ink below the line. Two stray specks (y154/y264) denoised. NOTE: the reflection's top **fuses** with the line — it does *not* band-split into free fragments; the single reflection sprite is revealed top→bottom and its own ink gaps read as the dabs. |
+| Reflection motion | **Echo drip** (chosen): the dot lands → its reflection reveals downward from the surface, the sprite's natural ink gaps reading as dabs ticking in, dwindling. Percussive top→bottom = this piece's drum line. A damped shimmer reaches 0 by the beat end so the still is crisp. |
 | Horizon reveal | Left→right mask **wipe** (honors the pen-down fork at the left, clean lift at the right). A wipe reads identically to a traced stroke for a thin horizontal line and avoids fiddly limb-tracing. |
 | Secret | Letter **R** (GROWTH → G,**R**,O,W,T,H; 002 = R). Woven in grain, coarser-dot texture anomaly inside a CSS-masked glyph, exactly as 001. Placed faint in the open paper field above the line. |
 | Audio | Not baked in. Added at post time; credited in the IG caption. |
@@ -93,11 +93,14 @@ gains `prepare-002` and `render-002` scripts mirroring 001.
 
 ## Technical notes
 
-- **Extraction bands:** row-band splitter (as 001) yields band 0 = horizon line +
-  dot (shared rows), then N reflection-fragment bands below. Tune `GAP_ROWS` so
-  the reflection breaks into its natural clusters (target ~5–8 fragments). Carve
-  `dot` from band 0: it is a compact high-density blob at center-x vs. the thin
-  full-width line — bbox the center column's dense run.
+- **Extraction cuts (structure-derived, per probe 2026-07-04):** the naive
+  row-band splitter does NOT work here — the reflection's top fuses with the line
+  and there are two stray specks up high. Instead: denoise (ignore y<480); LINE =
+  the maximal contiguous run of rows whose ink span >300px; DOT = the centered
+  blob from just above the line band, its columns punched out of the line sprite;
+  REFLECTION = the narrow centered ink below the line band, one sprite revealed
+  top→bottom (its own ink gaps read as the dabs). Small deliberate dot/line
+  overlap, in the spirit of 001's overlapping twig bases.
 - **Placement:** square 1080×1080 drawing centered in the 1080×1920 source frame
   (offsetY = 420). `placeSource` then centers the source frame in each comp. On
   16:9 the 1080-tall drawing fits the 1080 height exactly; on 4:5 it centers with
