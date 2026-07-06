@@ -7,16 +7,24 @@ import { PALETTE } from './palette';
 
 export const DEFAULT_DRIFT = 0.15;
 
-export const DitherLayer = ({ drift = DEFAULT_DRIFT }: { drift?: number }) => {
+export const DitherLayer = ({
+  drift = DEFAULT_DRIFT,
+  scale = 1,
+}: {
+  drift?: number;
+  scale?: number;
+}) => {
   const frame = useCurrentFrame();
   const shaderMs = (frame / FPS) * 1000 * drift;
+  const size = Math.max(1, Math.round(2 * scale));
+
   return (
     <Dithering
       colorBack={PALETTE.paper}
       colorFront="#E7E3D6"
       shape="simplex"
       type="8x8"
-      size={2}
+      size={size}
       speed={0}
       frame={shaderMs}
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
