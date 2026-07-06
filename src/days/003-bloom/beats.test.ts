@@ -4,7 +4,9 @@ import assert from 'node:assert';
 import {
   BEATS,
   stemReveal,
-  flowerBloom,
+  flowerLeftProgress,
+  flowerRightProgress,
+  flowerCenterProgress,
   dotOpacity,
   dotRise,
   labelIn,
@@ -25,20 +27,18 @@ describe('Day 003 timeline beats', () => {
     }
   });
 
-  it('flower blooms with subtle spring overshoot', () => {
-    assert.strictEqual(flowerBloom(0), 0);
-    assert.strictEqual(flowerBloom(BEATS.flower.start), 0);
-    assert.strictEqual(flowerBloom(BEATS.flower.end), 1);
-    assert.strictEqual(flowerBloom(400), 1);
+  it('flower parts draw in staggered sequence and are monotonic', () => {
+    assert.strictEqual(flowerLeftProgress(0), 0);
+    assert.strictEqual(flowerRightProgress(0), 0);
+    assert.strictEqual(flowerCenterProgress(0), 0);
 
-    // Should overshoot slightly above 1 before settling
-    let maxVal = 0;
-    for (let f = BEATS.flower.start; f <= BEATS.flower.end; f++) {
-      const val = flowerBloom(f);
-      if (val > maxVal) maxVal = val;
-    }
-    assert.ok(maxVal > 1.0, `Flower bloom should overshoot 1.0 (got ${maxVal})`);
-    assert.ok(maxVal < 1.1, `Flower bloom overshoot should be elegant and subtle (got ${maxVal})`);
+    // Left starts first, right second, center last
+    assert.ok(flowerLeftProgress(100) > flowerRightProgress(100));
+    assert.ok(flowerRightProgress(120) > flowerCenterProgress(120));
+
+    assert.strictEqual(flowerLeftProgress(220), 1);
+    assert.strictEqual(flowerRightProgress(220), 1);
+    assert.strictEqual(flowerCenterProgress(220), 1);
   });
 
   it('dot rise and opacity match the design', () => {
@@ -54,7 +54,9 @@ describe('Day 003 timeline beats', () => {
   it('still frame (352) is fully settled', () => {
     const STILL_FRAME = 352;
     assert.strictEqual(stemReveal(STILL_FRAME), 1);
-    assert.strictEqual(flowerBloom(STILL_FRAME), 1);
+    assert.strictEqual(flowerLeftProgress(STILL_FRAME), 1);
+    assert.strictEqual(flowerRightProgress(STILL_FRAME), 1);
+    assert.strictEqual(flowerCenterProgress(STILL_FRAME), 1);
     assert.strictEqual(dotOpacity(STILL_FRAME), 1);
     assert.strictEqual(dotRise(STILL_FRAME), 0);
     assert.strictEqual(labelIn(STILL_FRAME), 1);
