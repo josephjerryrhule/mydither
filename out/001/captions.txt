@@ -1,8 +1,7 @@
 === PERSONAL INSTAGRAM CAPTION ===
 001 — branch.
 
-growing is a slow movement:
-to branch is to search for light.
+part 1: a single shoot rises, branching upward to find the light.
 
 each print contains a hidden letter.
 six days. one word.
@@ -11,12 +10,13 @@ collect them all.
 #mydither #generativeart #minimalism #creativecoding #remotion #dither #printdesign #motiondesign #monochrome #zenart
 
 === PERSONAL X (TWITTER) CAPTION ===
-001 — branch.
-growing is a slow movement: to branch is to search for light.
+001 / branch — day one of a daily motion practice.
+built with @paper dithering shaders + @remotion, deterministic to the frame.
 
-each print contains a hidden letter. six days, one word. collect them all.
+the hunt: one letter hides in each piece’s grain. six days, in order.
+day six, DM the word on IG — shops are holding coupons + gifts.
 
-#mydither #generativeart #design
+day 1 of 6.
 
 === VENDOR PARTNER CAPTION ===
 we hid something.
