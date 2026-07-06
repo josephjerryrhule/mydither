@@ -15,7 +15,12 @@ const PAPER_LUM = 240; // clean paper threshold
 const INK_LUM = 80;    // clean ink threshold
 const GATE_LO = 0.15;
 const GATE_HI = 0.85;
-const CONTENT_Y0 = 100; // ignore header/border noise if any
+
+// Strict bounding box to denoise margins and capture only the rosebud drawing
+const CONTENT_X0 = 400;
+const CONTENT_X1 = 680;
+const CONTENT_Y0 = 380;
+const CONTENT_Y1 = 760;
 const MARGIN = 4;
 
 const BAYER8 = [
@@ -36,10 +41,10 @@ const { data, info } = await sharp(SRC)
   .toBuffer({ resolveWithObject: true });
 const { width: W, height: H, channels: C } = info;
 
-// Step 1: Binarize the drawing
+// Step 1: Binarize the drawing only inside the content gate
 const ink = new Uint8Array(W * H);
-for (let y = CONTENT_Y0; y < H; y++) {
-  for (let x = 0; x < W; x++) {
+for (let y = CONTENT_Y0; y < CONTENT_Y1; y++) {
+  for (let x = CONTENT_X0; x < CONTENT_X1; x++) {
     const i = (y * W + x) * C;
     const lum = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
     let a = (PAPER_LUM - lum) / (PAPER_LUM - INK_LUM);
