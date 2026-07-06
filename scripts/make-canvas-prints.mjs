@@ -1,18 +1,15 @@
 // scripts/make-canvas-prints.mjs
 // Generates high-resolution landscape 30" x 20" canvas prints at 300 DPI (9000 x 6000 px).
-// Re-creates the entire scene programmatically at 1/5th resolution (1800 x 1200 px):
+// Re-creates the entire scene natively at print resolution (9000 x 6000 px):
 // - Full-frame deterministic Simplex noise dither for the paper background (no double-backgrounds, fills margins).
-// - High-res dithered secret glyph (coarser grain size 5) woven into the background.
-// - High-res dithered drawing centered (dithered directly at target height, no pixelated scaling).
-// - High-res dithered gallery placard in the bottom-left.
-// Then upscales 5x using nearest-neighbor to ensure every dither dot is a perfectly sharp 5x5 block.
+// - Base grain size 6 and secret grain size 15 to match the exact visual scale of the video.
+// - High-res dithered drawing centered with the exact 16:9 vertical crop and scale (3.125x).
+// - High-res dithered gallery placard in the bottom-left (2000 x 237 px).
 import sharp from 'sharp';
 import { writeFileSync, mkdirSync } from 'node:fs';
 
 const PRINT_W = 9000;
 const PRINT_H = 6000;
-const BASE_W = 1800; // 9000 / 5
-const BASE_H = 1200; // 6000 / 5
 
 const INK = [0x1a, 0x18, 0x17];
 const PAPER = [0xf2, 0xef, 0xe6];
@@ -94,15 +91,15 @@ function createNoise2D(seed) {
 
 const noise = createNoise2D(42);
 
-// Renders the background dither with the secret glyph integrated
+// Renders the background dither with the secret glyph integrated natively at print scale
 async function renderBackground(secretOpt) {
-  // Create secret letter mask
+  // Create secret letter mask at print scale, flattened as 1-channel greyscale
   const glyphSize = Math.round(secretOpt.size * 0.85);
   const secretSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${secretOpt.size}" height="${secretOpt.size}" viewBox="0 0 ${secretOpt.size} ${secretOpt.size}">
     <rect width="${secretOpt.size}" height="${secretOpt.size}" fill="#ffffff"/>
     <text x="${secretOpt.size/2}" y="${secretOpt.size/2}" font-family="'Courier New', Courier, monospace" font-size="${glyphSize}" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#000000">${secretOpt.char}</text>
   </svg>`;
-  const secretMask = await sharp(Buffer.from(secretSvg)).raw().toBuffer();
+  const secretMask = await sharp(Buffer.from(secretSvg)).greyscale().raw().toBuffer();
 
   const isInsideSecret = (x, y) => {
     const rx = x - (secretOpt.x - secretOpt.size / 2);
@@ -114,13 +111,16 @@ async function renderBackground(secretOpt) {
     return false;
   };
 
-  const px = Buffer.alloc(BASE_W * BASE_H * 4);
-  for (let y = 0; y < BASE_H; y++) {
-    for (let x = 0; x < BASE_W; x++) {
+  const px = Buffer.alloc(PRINT_W * PRINT_H * 4);
+  const SCALE_BASE = 6;
+  const SCALE_SECRET = 15;
+  const FREQ_BASE = SCALE_BASE * 6;
+  const FREQ_SECRET = SCALE_SECRET * 6;
+
+  for (let y = 0; y < PRINT_H; y++) {
+    for (let x = 0; x < PRINT_W; x++) {
       const inside = isInsideSecret(x, y);
-      // size 2 outside, size 5 inside (coarser grain)
-      const size = inside ? 5 : 2;
-      const freq = size * 6; // frequency scale matching shader
+      const freq = inside ? FREQ_SECRET : FREQ_BASE;
 
       const n = noise(x / freq, y / freq);
       const val = n * 0.5 + 0.5;
@@ -128,7 +128,7 @@ async function renderBackground(secretOpt) {
       const on = val * 64 > BAYER8[y % 8][x % 8] + 0.5;
       const col = on ? GRAIN : PAPER;
 
-      const o = (y * BASE_W + x) * 4;
+      const o = (y * PRINT_W + x) * 4;
       px[o] = col[0]; px[o+1] = col[1]; px[o+2] = col[2]; px[o+3] = 255;
     }
   }
@@ -157,27 +157,30 @@ async function ditherDrawing(srcPath, targetW, targetH, thresholds, denoiseY = 0
       if (a > thresholds.gateHi) a = 1;
 
       const on = a * 64 > BAYER8[y % 8][x % 8] + 0.5;
+      const o = (y * W + x) * 4;
       if (on) {
-        const o = (y * W + x) * 4;
         px[o] = INK[0]; px[o+1] = INK[1]; px[o+2] = INK[2]; px[o+3] = 255;
+      } else {
+        // Transparent background so it overlays cleanly onto the paper dither background
+        px[o] = 0; px[o+1] = 0; px[o+2] = 0; px[o+3] = 0;
       }
     }
   }
   return { data: px, width: W, height: H };
 }
 
-// Renders the placard text SVG and dithers it
+// Renders the placard text SVG and dithers it natively at print scale
 async function renderPlacard(title, message) {
-  const W = 640;
-  const H = 76;
+  const W = 2000; // 640 * 3.125
+  const H = 237;  // 76 * 3.125
   const FONT = `'Courier New', Courier, monospace`;
   const escapeXml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
     <rect width="${W}" height="${H}" fill="#ffffff"/>
     <g font-family="${FONT}" fill="#000000">
-      <text x="0" y="22" font-size="21" font-weight="bold" letter-spacing="2">${escapeXml(title.toUpperCase())}</text>
-      <text x="0" y="56" font-size="17">${escapeXml(message)}</text>
+      <text x="0" y="69" font-size="66" font-weight="bold" letter-spacing="6">${escapeXml(title.toUpperCase())}</text>
+      <text x="0" y="175" font-size="53">${escapeXml(message)}</text>
     </g>
   </svg>`;
 
@@ -193,9 +196,11 @@ async function renderPlacard(title, message) {
       if (a > 0.85) a = 1;
 
       const on = a * 64 > BAYER8[y % 8][x % 8] + 0.5;
+      const o = (y * W + x) * 4;
       if (on) {
-        const o = (y * W + x) * 4;
         px[o] = INK[0]; px[o+1] = INK[1]; px[o+2] = INK[2]; px[o+3] = 255;
+      } else {
+        px[o] = 0; px[o+1] = 0; px[o+2] = 0; px[o+3] = 0;
       }
     }
   }
@@ -203,13 +208,13 @@ async function renderPlacard(title, message) {
 }
 
 async function generateCanvasPrint(dayNum, drawingOpt, secretOpt, placardOpt, outputPath) {
-  console.log(`Generating high-res 30x20 canvas print for Day ${dayNum}...`);
+  console.log(`Generating native 30x20 canvas print for Day ${dayNum}...`);
 
-  // 1. Generate full dither background at 1800x1200
+  // 1. Generate full dither background at 9000x6000 (takes ~3s)
   const bgData = await renderBackground(secretOpt);
-  const bgImage = sharp(bgData, { raw: { width: BASE_W, height: BASE_H, channels: 4 } });
+  const bgImage = sharp(bgData, { raw: { width: PRINT_W, height: PRINT_H, channels: 4 } });
 
-  // 2. Dither the drawing at target height (1200px) directly (not pixelated!)
+  // 2. Dither the drawing directly at target print size (no upscale pixelation!)
   const ditheredDraw = await ditherDrawing(
     drawingOpt.src,
     drawingOpt.w,
@@ -219,23 +224,16 @@ async function generateCanvasPrint(dayNum, drawingOpt, secretOpt, placardOpt, ou
   );
   const drawBuffer = await sharp(ditheredDraw.data, { raw: { width: ditheredDraw.width, height: ditheredDraw.height, channels: 4 } }).png().toBuffer();
 
-  // 3. Dither the placard text directly
+  // 3. Dither the placard text at target print size
   const ditheredPlacard = await renderPlacard(placardOpt.title, placardOpt.message);
   const placardBuffer = await sharp(ditheredPlacard.data, { raw: { width: ditheredPlacard.width, height: ditheredPlacard.height, channels: 4 } }).png().toBuffer();
 
-  // 4. Composite drawing and placard onto the dither background
-  const compositeBase = await bgImage
+  // 4. Composite drawing and placard onto the dither background natively at 9000x6000
+  await bgImage
     .composite([
       { input: drawBuffer, left: drawingOpt.x, top: drawingOpt.y },
       { input: placardBuffer, left: placardOpt.x, top: placardOpt.y }
     ])
-    .png()
-    .toBuffer();
-
-  // 5. Upscale 5x using nearest-neighbor to PRINT_W x PRINT_H (9000 x 6000 px)
-  // This scales the fine 1px dither dots to sharp 5x5 blocks on the print canvas
-  await sharp(compositeBase)
-    .resize(PRINT_W, PRINT_H, { kernel: 'nearest' })
     .png({ compressionLevel: 9 })
     .toFile(outputPath);
 
@@ -245,61 +243,66 @@ async function generateCanvasPrint(dayNum, drawingOpt, secretOpt, placardOpt, ou
 async function run() {
   mkdirSync('out', { recursive: true });
 
+  const SCALE = 3.125; // 6000 / 1920
+  const OFFSET_X = Math.round((PRINT_W - 1080 * SCALE) / 2); // 2812 px
+  const PLACARD_X = Math.round(64 * SCALE); // 200 px
+  const PLACARD_Y = Math.round(PRINT_H - (64 * SCALE) - (76 * SCALE)); // 5563 px
+
   // --- Day 001 ---
   const thresholds001 = { paper: 225, ink: 60, gateLo: 0.12, gateHi: 0.85 };
-  const drawW001 = Math.round(1200 * 665 / 1182); // 675 px
+  const drawW001 = Math.round(3375 * 665 / 1182); // 1899 px wide branch scan at high-res
   await generateCanvasPrint(
     '001',
     {
       src: 'assets/001-branch-source.jpeg',
-      x: Math.round((BASE_W - drawW001) / 2),
+      x: OFFSET_X + Math.round((1080 * SCALE - drawW001) / 2),
       y: 0,
       w: drawW001,
-      h: 1200,
+      h: PRINT_H,
       thresholds: thresholds001,
       denoiseY: 0
     },
     {
       char: 'G',
-      x: Math.round(BASE_W / 2 + 0.70 * 675 / 2), // centered relative offsets
-      y: Math.round(1200 * 0.40),
-      size: Math.round(96 * 0.625)
+      x: OFFSET_X + Math.round(0.70 * 1080 * SCALE),
+      y: Math.round(0.40 * 1920 * SCALE),
+      size: Math.round(96 * SCALE) // 300 px
     },
     {
       title: '001 / BRANCH',
       message: 'a sprout reaches up, breaking the soil.',
-      x: 80,
-      y: 1200 - 80 - 76
+      x: PLACARD_X,
+      y: PLACARD_Y
     },
     'out/001-canvas-print-30x20.png'
   );
 
   // --- Day 002 ---
   const thresholds002 = { paper: 225, ink: 60, gateLo: 0.12, gateHi: 0.85 };
-  const drawSize002 = 675; // 1080 * 0.625
-  const offsetDrawY002 = Math.round(420 * 0.625); // 262 px
+  const drawSize002 = Math.round(1080 * SCALE); // 3375 px square drawing
+  const offsetDrawY002 = Math.round(420 * SCALE); // 1312 px top offset
   await generateCanvasPrint(
     '002',
     {
       src: 'assets/002-reflection-source.jpg',
-      x: Math.round((BASE_W - drawSize002) / 2),
+      x: OFFSET_X,
       y: offsetDrawY002,
       w: drawSize002,
       h: drawSize002,
       thresholds: thresholds002,
-      denoiseY: Math.round(480 * 0.625) // denoise above 300px
+      denoiseY: Math.round(480 * SCALE) // 1500 px denoise boundary
     },
     {
       char: 'R',
-      x: Math.round(BASE_W / 2 - 675 * 0.20), // R positioned above line on the left
-      y: Math.round(1200 * 0.27),
-      size: Math.round(96 * 0.625)
+      x: OFFSET_X + Math.round(0.30 * 1080 * SCALE),
+      y: Math.round(0.27 * 1920 * SCALE),
+      size: Math.round(96 * SCALE) // 300 px
     },
     {
       title: '002 / reflection',
       message: 'a mark on the horizon, and the water’s reply.',
-      x: 80,
-      y: 1200 - 80 - 76
+      x: PLACARD_X,
+      y: PLACARD_Y
     },
     'out/002-canvas-print-30x20.png'
   );
