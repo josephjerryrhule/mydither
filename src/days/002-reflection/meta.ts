@@ -13,7 +13,7 @@ export type Meta = {
 export const META: Meta = {
   id: '002',
   title: '002 / reflection',
-  message: 'a mark on the horizon, and the water’s reply.',
+  message: 'part 2: nourished by reflection, it learns to stand still.',
   // R sits in the open field above the line (varied left vs 001’s right).
   // yPct 0.27 (not lower): at 0.24 the 96px glyph clips the top on the 16:9 crop
   // (offsetY -420) — lesson carried from 001.
@@ -21,29 +21,21 @@ export const META: Meta = {
   igCaption: [
     '002 — reflection.',
     '',
-    'a dot rests on the horizon. the water underneath doesn’t copy it —',
-    'it answers, breaking the light into pieces the deeper it falls.',
-    'the source holds still; the reflection is the part that can’t.',
+    'part 2: nourished by reflection, it learns to stand still.',
     '',
-    'drawing: [source]',
-    'sound: [artist — track]',
+    'each print contains a hidden letter.',
+    'six days. one word.',
+    'collect them all.',
     '',
-    'the hunt continues: six days, six pieces, one letter hiding in the grain of each.',
-    'collect all six, in order. day six: DM me the word — partner shops are',
-    'holding coupons + gifts for the ones who get it right. rules on slide one.',
-    '',
-    'day 2 of 6.',
-    '',
-    '#mydither #motion #dither #minimal #thehunt',
+    '#mydither #generativeart #minimalism #creativecoding #remotion #dither #printdesign #motiondesign #monochrome #reflection',
   ].join('\n'),
   xCaption: [
-    '002 / reflection — day two of a daily motion practice.',
-    'built with @paper dithering shaders + @remotion, deterministic to the frame.',
+    '002 / reflection.',
+    'part 2: nourished by reflection, it learns to stand still.',
     '',
-    'the hunt: one letter hides in each piece’s grain. six days, in order.',
-    'day six, DM the word on IG — shops are holding coupons + gifts.',
+    'each print contains a hidden letter. six days, one word. collect them all.',
     '',
-    'day 2 of 6.',
+    '#mydither #generativeart #design',
   ].join('\n'),
   xThread: [
     [
