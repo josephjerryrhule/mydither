@@ -50,13 +50,19 @@ for (let y = CONTENT_Y0; y < H; y++) {
   }
 }
 
-// Step 2: Let's find the split point (Y coordinate) between the flower head and the stem.
-// We can scan the row density: the flower head is a wide mass, then it meets the stem
-// which is a very narrow single stroke.
-let splitY = Math.round(H * 0.40); // default fallback split around 40% height
+// Find ink bounding box range
+let minY = H, maxY = -1;
+for (let y = 0; y < H; y++) {
+  for (let x = 0; x < W; x++) {
+    if (ink[y * W + x]) {
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+  }
+}
+console.log(`Ink bounding box: Y = ${minY} to ${maxY}`);
 
-// Let's print out the row-by-row horizontal spans to analyze the structure
-console.log("Analyzing ink density profile...");
+// Scan row density
 const rowSpan = new Int32Array(H);
 for (let y = 0; y < H; y++) {
   let minX = W, maxX = -1;
@@ -69,9 +75,14 @@ for (let y = 0; y < H; y++) {
   rowSpan[y] = maxX >= minX ? (maxX - minX) : 0;
 }
 
-// Find a valley in rowSpan between 35% and 45% height (where the flower head meets the stem)
+// Valley search is performed relatively within the upper middle section of the drawing
+// (e.g. between 60px and 120px below the top of the drawing) to find the flower-to-stem bottleneck
+let splitY = minY + 90; // fallback split point
 let minSpan = W;
-for (let y = Math.round(H * 0.35); y < Math.round(H * 0.45); y++) {
+const searchStart = minY + 60;
+const searchEnd = minY + 120;
+
+for (let y = searchStart; y < searchEnd; y++) {
   if (rowSpan[y] > 0 && rowSpan[y] < minSpan) {
     minSpan = rowSpan[y];
     splitY = y;
@@ -81,7 +92,7 @@ console.log(`Determined split point between flower head and stem: Y = ${splitY} 
 
 // Step 3: Write helper to extract bounding box and output PNG
 async function saveSprite(name, filterFn) {
-  let minX = W, maxX = -1, minY = H, maxY = -1;
+  let minX = W, maxX = -1, sMinY = H, sMaxY = -1;
   
   // Find bounding box for pixels matching filterFn
   for (let y = 0; y < H; y++) {
@@ -89,25 +100,25 @@ async function saveSprite(name, filterFn) {
       if (ink[y * W + x] && filterFn(x, y)) {
         if (x < minX) minX = x;
         if (x > maxX) maxX = x;
-        if (y < minY) minY = y;
-        if (y > maxY) maxY = y;
+        if (y < sMinY) sMinY = y;
+        if (y > sMaxY) sMaxY = y;
       }
     }
   }
 
-  if (maxX < minX || maxY < minY) {
+  if (maxX < minX || sMaxY < sMinY) {
     console.log(`Skipping sprite ${name} (empty)`);
     return null;
   }
 
   const sW = (maxX - minX + 1) + MARGIN * 2;
-  const sH = (maxY - minY + 1) + MARGIN * 2;
+  const sH = (sMaxY - sMinY + 1) + MARGIN * 2;
   const sprite = new Uint8Array(sW * sH * 4); // RGBA
 
   for (let sy = 0; sy < sH; sy++) {
     for (let sx = 0; sx < sW; sx++) {
       const x = minX - MARGIN + sx;
-      const y = minY - MARGIN + sy;
+      const y = sMinY - MARGIN + sy;
       const destIdx = (sy * sW + sx) * 4;
 
       if (x >= 0 && x < W && y >= 0 && y < H && ink[y * W + x] && filterFn(x, y)) {
@@ -128,7 +139,7 @@ async function saveSprite(name, filterFn) {
     .png()
     .toFile(filename);
 
-  const relativeY = minY - MARGIN + DRAW_OFFSET_Y;
+  const relativeY = sMinY - MARGIN + DRAW_OFFSET_Y;
   const relativeX = minX - MARGIN;
 
   console.log(`Saved ${filename}: ${sW}×${sH} px, placement relative to 1080×1920 source: left=${relativeX}, top=${relativeY}`);

@@ -18,8 +18,8 @@ export const Dot = () => {
       style={{ position: 'absolute', top: 0, left: 0 }}
     >
       <circle
-        cx={557}
-        cy={700 - rise}
+        cx={541}
+        cy={855 - rise}
         r={11}
         fill="#1a1817"
         opacity={opacity}
