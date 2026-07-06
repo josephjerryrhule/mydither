@@ -7,7 +7,6 @@ import { type CompSize } from '../../system/frames';
 import { PALETTE } from '../../system/palette';
 import { Bloom, useInkPreload } from './Bloom';
 import { breathScale, labelIn, pushInScale } from './beats';
-import { Dot } from './Dot';
 import { Secret } from './Secret';
 
 export const Scene = ({ comp }: { comp: CompSize }) => {
@@ -70,8 +69,7 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
         >
           {/* Hide the treasure-hunt secret glyph on print gallery versions */}
           {!isPrint && <Secret />}
-          {/* Dot renders behind the bloom petals */}
-          <Dot />
+          {/* Stem and flower layers */}
           <Bloom />
         </div>
       </div>
