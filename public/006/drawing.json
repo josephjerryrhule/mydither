@@ -1,0 +1,20 @@
+{
+  "sprout": {
+    "width": 243,
+    "height": 333,
+    "left": 426,
+    "top": 882
+  },
+  "dot": {
+    "width": 141,
+    "height": 149,
+    "left": 274,
+    "top": 628
+  },
+  "ground": {
+    "width": 747,
+    "height": 120,
+    "left": 200,
+    "top": 1207
+  }
+}
