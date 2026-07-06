@@ -21,11 +21,9 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
   const scaleFactor = renderH / comp.height;
   const zoom = breathScale(frame) * pushInScale(frame);
 
-  // Position and dimension calculations for the centered vertical drawing frame
-  const drawW = 1080 * scaleFactor;
-  const drawH = 1920 * scaleFactor;
-  const drawLeft = (renderW - drawW) / 2;
-  const drawTop = (renderH - drawH) / 2;
+  // Center coordinates for the unscaled container
+  const left = (renderW - 1080 * scaleFactor) / 2;
+  const top = (renderH - 1920 * scaleFactor) / 2;
 
   return (
     <AbsoluteFill style={{ backgroundColor: PALETTE.paper, overflow: 'hidden' }}>
@@ -33,18 +31,27 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
       <div
         style={{
           position: 'absolute',
-          left: drawLeft,
-          top: drawTop,
+          left,
+          top,
           width: 1080,
           height: 1920,
-          transform: `scale(${scaleFactor * zoom})`,
-          transformOrigin: '50% 50%',
+          transform: `scale(${scaleFactor})`,
+          transformOrigin: 'top left',
         }}
       >
-        <Secret />
-        <Horizon />
-        <Dot />
-        <Reflection />
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            transform: `scale(${zoom})`,
+            transformOrigin: '50% 50%',
+          }}
+        >
+          <Secret />
+          <Horizon />
+          <Dot />
+          <Reflection />
+        </div>
       </div>
       <GalleryLabel
         src={staticFile('002/label.png')}
