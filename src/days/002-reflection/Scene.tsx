@@ -39,10 +39,10 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
       <div
         style={{
           position: 'absolute',
-          left: (renderW - 1920 * scaleFactor) / 2,
-          top: 0,
-          width: 1920,
-          height: 1080,
+          left: (renderW - comp.width * scaleFactor) / 2,
+          top: (renderH - comp.height * scaleFactor) / 2,
+          width: comp.width,
+          height: comp.height,
           transform: `scale(${scaleFactor})`,
           transformOrigin: 'top left',
           imageRendering: 'pixelated',
