@@ -67,7 +67,7 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
         width={label.width}
         height={label.height}
         progress={labelIn(frame)}
-        bottom={comp.height / comp.width > 1.5 ? 250 : 64}
+        bottom={comp.height / comp.width > 1.5 ? 250 : 320}
         scale={scaleFactor}
       />
     </AbsoluteFill>
