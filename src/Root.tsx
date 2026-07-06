@@ -8,6 +8,8 @@ import { HuntCard as HuntCard003, HuntShopCard as HuntShopCard003, HuntShopStory
 import { Scene as Scene003 } from './days/003-bloom/Scene';
 import { HuntCard as HuntCard004, HuntShopCard as HuntShopCard004, HuntShopStory as HuntShopStory004 } from './days/004-wind/HuntCard';
 import { Scene as Scene004 } from './days/004-wind/Scene';
+import { HuntCard as HuntCard005, HuntShopCard as HuntShopCard005, HuntShopStory as HuntShopStory005 } from './days/005-tumble/HuntCard';
+import { Scene as Scene005 } from './days/005-tumble/Scene';
 
 export const Root = () => (
   <>
@@ -153,5 +155,37 @@ export const Root = () => (
     <Still id="Day004-Hunt" component={HuntCard004} width={COMPS.fourFive.width} height={COMPS.fourFive.height} />
     <Still id="Day004-HuntShop" component={HuntShopCard004} width={COMPS.fourFive.width} height={COMPS.fourFive.height} />
     <Still id="Day004-HuntShop-Story" component={HuntShopStory004} width={COMPS.nineSixteen.width} height={COMPS.nineSixteen.height} />
+
+    {/* Day 005 — Tumble */}
+    <Composition
+      id="Day005-16x9"
+      component={Scene005}
+      defaultProps={{ comp: COMPS.sixteenNine }}
+      durationInFrames={DURATION}
+      fps={FPS}
+      width={COMPS.sixteenNine.width}
+      height={COMPS.sixteenNine.height}
+    />
+    <Composition
+      id="Day005-4x5"
+      component={Scene005}
+      defaultProps={{ comp: COMPS.fourFive }}
+      durationInFrames={DURATION}
+      fps={FPS}
+      width={COMPS.fourFive.width}
+      height={COMPS.fourFive.height}
+    />
+    <Composition
+      id="Day005-9x16"
+      component={Scene005}
+      defaultProps={{ comp: COMPS.nineSixteen }}
+      durationInFrames={DURATION}
+      fps={FPS}
+      width={COMPS.nineSixteen.width}
+      height={COMPS.nineSixteen.height}
+    />
+    <Still id="Day005-Hunt" component={HuntCard005} width={COMPS.fourFive.width} height={COMPS.fourFive.height} />
+    <Still id="Day005-HuntShop" component={HuntShopCard005} width={COMPS.fourFive.width} height={COMPS.fourFive.height} />
+    <Still id="Day005-HuntShop-Story" component={HuntShopStory005} width={COMPS.nineSixteen.width} height={COMPS.nineSixteen.height} />
   </>
 );
