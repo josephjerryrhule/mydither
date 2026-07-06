@@ -6,11 +6,7 @@ import {
   stemGrowProgress,
   windProgress,
   stemSkewX,
-  seedProgress,
-  seedOpacity,
   labelIn,
-  breathScale,
-  pushInScale,
 } from './beats';
 
 describe('Day 004 timeline beats', () => {
@@ -33,33 +29,16 @@ describe('Day 004 timeline beats', () => {
 
     assert.strictEqual(stemSkewX(0), 0);
     assert.strictEqual(stemSkewX(BEATS.wind.start), 0);
-    assert.strictEqual(stemSkewX(BEATS.wind.end), -7);
+    assert.strictEqual(stemSkewX(BEATS.wind.end), 7);
 
     const midSkew = stemSkewX(150);
-    assert.ok(midSkew < 0 && midSkew > -7);
-  });
-
-  it('seeds progress and opacity match wind release schedule', () => {
-    for (let i = 0; i < 3; i++) {
-      const s = BEATS.seeds[i];
-      assert.strictEqual(seedProgress(0, i), 0);
-      assert.strictEqual(seedProgress(s.start, i), 0);
-      assert.strictEqual(seedProgress(s.end, i), 1);
-      assert.strictEqual(seedProgress(352, i), 1);
-
-      assert.strictEqual(seedOpacity(0, i), 0);
-      assert.strictEqual(seedOpacity(s.start, i), 0);
-      assert.strictEqual(seedOpacity(s.start + 20, i), 1);
-    }
+    assert.ok(midSkew > 0 && midSkew < 7);
   });
 
   it('still frame (352) is fully settled', () => {
     assert.strictEqual(stemGrowProgress(352), 1);
     assert.strictEqual(windProgress(352), 1);
-    assert.strictEqual(stemSkewX(352), -7);
-    assert.strictEqual(seedProgress(352, 0), 1);
-    assert.strictEqual(seedProgress(352, 1), 1);
-    assert.strictEqual(seedProgress(352, 2), 1);
+    assert.strictEqual(stemSkewX(352), 7);
     assert.strictEqual(labelIn(352), 1);
   });
 });

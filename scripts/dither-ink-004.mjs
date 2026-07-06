@@ -2,8 +2,8 @@
 // Pixel-perfect extraction for Day 004 / Wind.
 // Takes assets/004-wind-source.jpg, applies ordered-Bayer dithering,
 // and splits the drawing into:
-// - stem.png (the main plant stem, leaves, and flower head on the right)
-// - seed1.png, seed2.png, seed3.png (the three individual seeds flying on the left)
+// - stem.png (the main plant stem and flower head)
+// - wind.png (the horizontal sweeping wind current lines)
 import sharp from 'sharp';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
@@ -17,8 +17,8 @@ const GATE_LO = 0.15;
 const GATE_HI = 0.85;
 
 // Clean gate to filter any vignetting/shadow noise on outer margins
-const CONTENT_X0 = 150;
-const CONTENT_X1 = 950;
+const CONTENT_X0 = 50;
+const CONTENT_X1 = 1030;
 const CONTENT_Y0 = 200;
 const CONTENT_Y1 = 950;
 const MARGIN = 4;
@@ -55,7 +55,22 @@ for (let y = CONTENT_Y0; y < CONTENT_Y1; y++) {
   }
 }
 
-// Step 2: Extract regions using coordinate ranges
+// Step 2: Plant classification function
+function isPlantPixel(x, y) {
+  // Flower head box
+  if (y >= 260 && y <= 430 && x >= 580 && x <= 750) return true;
+  // Diagonal stem corridor from (270, 930) to (630, 310)
+  const yMin = 310, yMax = 930;
+  const xMin = 270, xMax = 630;
+  if (y >= yMin && y <= yMax) {
+    const t = (y - yMin) / (yMax - yMin); // 0 at top, 1 at bottom
+    const expectedX = xMin + (xMax - xMin) * (1 - t); // diagonal line
+    if (Math.abs(x - expectedX) < 18) return true;
+  }
+  return false;
+}
+
+// Step 3: Extract regions using coordinate classifiers
 async function saveSprite(name, filterFn) {
   let minX = W, maxX = -1, minY = H, maxY = -1;
   
@@ -110,19 +125,12 @@ async function saveSprite(name, filterFn) {
 
 mkdirSync(OUT_DIR, { recursive: true });
 
-// Split coordinates:
-// - Seed 1: X < 315
-// - Seed 2: 315 <= X < 375
-// - Seed 3: 375 <= X < 460
-// - Stem: X >= 460
-const seed1Meta = await saveSprite('seed1', (x, y) => x < 315);
-const seed2Meta = await saveSprite('seed2', (x, y) => x >= 315 && x < 375);
-const seed3Meta = await saveSprite('seed3', (x, y) => x >= 375 && x < 460);
-const stemMeta = await saveSprite('stem', (x, y) => x >= 460);
+const stemMeta = await saveSprite('stem', (x, y) => isPlantPixel(x, y));
+const windMeta = await saveSprite('wind', (x, y) => !isPlantPixel(x, y));
 
 const metadata = {
   stem: stemMeta,
-  seeds: [seed1Meta, seed2Meta, seed3Meta],
+  wind: windMeta,
 };
 
 writeFileSync(`${OUT_DIR}/drawing.json`, JSON.stringify(metadata, null, 2));

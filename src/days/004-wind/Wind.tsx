@@ -5,8 +5,7 @@ import drawing from '../../../public/004/drawing.json';
 import {
   stemGrowProgress,
   stemSkewX,
-  seedProgress,
-  seedOpacity,
+  windProgress,
 } from './beats';
 
 // Preload handle to ensure images are fully loaded before rendering frames
@@ -19,9 +18,7 @@ export function useInkPreload() {
   useEffect(() => {
     const urls = [
       staticFile('004/stem.png'),
-      staticFile('004/seed1.png'),
-      staticFile('004/seed2.png'),
-      staticFile('004/seed3.png'),
+      staticFile('004/wind.png'),
     ];
     let loaded = 0;
     const handleLoad = () => {
@@ -34,36 +31,22 @@ export function useInkPreload() {
       const img = new Image();
       img.src = url;
       img.onload = handleLoad;
-      img.onerror = handleLoad; // don't block forever on network failure
+      img.onerror = handleLoad;
     });
   }, []);
 }
 
 export const Wind = () => {
   const frame = useCurrentFrame();
-  const { stem, seeds } = drawing;
+  const { stem, wind } = drawing;
 
   const stemProgress = stemGrowProgress(frame);
+  const wProgress = windProgress(frame);
   const skewX = stemSkewX(frame);
 
-  // The base of the stem is around x=820, y=1345 in the unscaled canvas
-  const stemBaseX = 820;
-  const stemBaseY = 1345;
-
-  // The origin point from which seeds detach (the bending flower head)
-  // Since the stem bends, the flower head origin also shifts to the left!
-  // We can calculate the shifted origin by rotating the static origin point (500, 700)
-  // around the stem base (stemBaseX, stemBaseY) by the current skew/rotation angle.
-  const staticOriginX = 500;
-  const staticOriginY = 700;
-
-  const angleRad = (skewX * Math.PI) / 180;
-  const cos = Math.cos(angleRad);
-  const sin = Math.sin(angleRad);
-
-  // Rotate static origin around stem base
-  const originX = stemBaseX + (staticOriginX - stemBaseX) * cos - (staticOriginY - stemBaseY) * sin;
-  const originY = stemBaseY + (staticOriginX - stemBaseX) * sin + (staticOriginY - stemBaseY) * cos;
+  // The base of the stem is around x=280, y=1350 in the unscaled canvas
+  const stemBaseX = 280;
+  const stemBaseY = 1350;
 
   return (
     <svg
@@ -90,9 +73,32 @@ export const Wind = () => {
             fill="white"
           />
         </mask>
+
+        {/* Left-to-right wipe mask for the sweeping wind swooshes */}
+        <mask id="wind-sweep-004" maskUnits="userSpaceOnUse">
+          <rect width={1080} height={1920} fill="black" />
+          <rect
+            x={wind.left - 20}
+            y={wind.top - 20}
+            width={(wind.width + 40) * wProgress}
+            height={wind.height + 40}
+            fill="white"
+          />
+        </mask>
       </defs>
 
-      {/* Main plant stem and leaves */}
+      {/* Wind swooshes in the background */}
+      <image
+        href={staticFile('004/wind.png')}
+        x={wind.left}
+        y={wind.top}
+        width={wind.width}
+        height={wind.height}
+        mask="url(#wind-sweep-004)"
+        style={{ opacity: 0.85 }} // slightly softer ink opacity for background wind swooshes
+      />
+
+      {/* Main plant stem and flower head, bending to the right */}
       <g transform={`rotate(${skewX}, ${stemBaseX}, ${stemBaseY})`}>
         <image
           href={staticFile('004/stem.png')}
@@ -103,35 +109,6 @@ export const Wind = () => {
           mask="url(#stem-grow-004)"
         />
       </g>
-
-      {/* Floating Seeds */}
-      {seeds.map((seed, i) => {
-        const p = seedProgress(frame, i);
-        const opacity = seedOpacity(frame, i);
-
-        // Interpolate position from the flower head origin to final drawn coordinate
-        const x = originX + (seed.left - originX) * p;
-        const y = originY + (seed.top - originY) * p;
-
-        // Add a slight spin/rotation to the seeds as they fly
-        const seedRotation = (1 - p) * 45;
-
-        return (
-          <image
-            key={i}
-            href={staticFile(`004/seed${i + 1}.png`)}
-            x={x}
-            y={y}
-            width={seed.width}
-            height={seed.height}
-            style={{
-              opacity,
-              transform: `rotate(${seedRotation}deg)`,
-              transformOrigin: `${x + seed.width / 2}px ${y + seed.height / 2}px`,
-            }}
-          />
-        );
-      })}
     </svg>
   );
 };
