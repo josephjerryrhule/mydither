@@ -14,7 +14,7 @@ export const META: Meta = {
   id: '005',
   title: '005 / tumble',
   message: 'a seed in the dark is still a seed.',
-  secret: { char: 'T', xPct: 0.78, yPct: 0.82, sizePx: 96 },
+  secret: { char: 'T', xPct: 0.72, yPct: 0.28, sizePx: 96 },
   igCaption: [
     '005 — tumble.',
     '',
