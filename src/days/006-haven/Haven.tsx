@@ -47,11 +47,6 @@ export const Haven = () => {
   // Sprout mask calculations: grows upwards from bottom (height decreases)
   const sproutBottom = sprout!.top + sprout!.height;
   const sproutMaskY = sproutBottom - sprout!.height * sGrowth;
-
-  // Concentric background ripple parameters centered near sprout base
-  const centerX = sprout!.left + sprout!.width / 2;
-  const centerY = sproutBottom;
-
   return (
     <svg
       width={1080}
@@ -90,15 +85,6 @@ export const Haven = () => {
           />
         </mask>
       </defs>
-
-      {/* Background ripples: concentric circles emanating from the sprout base */}
-      {rProgress > 0 && (
-        <g style={{ opacity: rProgress * 0.15 }} stroke="#1a1817" strokeWidth="2" fill="none">
-          <circle cx={centerX} cy={centerY} r={80} strokeDasharray="4 4" />
-          <circle cx={centerX} cy={centerY} r={180} strokeDasharray="6 6" />
-          <circle cx={centerX} cy={centerY} r={280} strokeDasharray="8 8" />
-        </g>
-      )}
 
       {/* Ground/soil line */}
       <image
