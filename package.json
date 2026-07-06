@@ -7,13 +7,16 @@
     "prepare-001": "node scripts/dither-ink.mjs && tsx scripts/dither-label.mts && tsx scripts/dither-hunt.mts",
     "prepare-002": "node scripts/dither-ink-002.mjs && tsx scripts/dither-label-002.mts && tsx scripts/dither-hunt-002.mts",
     "prepare-003": "node scripts/dither-ink-003.mjs && tsx scripts/dither-label-003.mts && tsx scripts/dither-hunt-003.mts",
-    "test": "tsx --test src/days/001-branch/beats.test.ts && node --test scripts/dither-ink.test.mjs && tsx --test src/days/002-reflection/beats.test.ts && node --test scripts/dither-ink-002.test.mjs && tsx --test src/days/003-bloom/beats.test.ts",
+    "prepare-004": "node scripts/dither-ink-004.mjs && tsx scripts/dither-label-004.mts && tsx scripts/dither-hunt-004.mts",
+    "test": "tsx --test src/days/001-branch/beats.test.ts && node --test scripts/dither-ink.test.mjs && tsx --test src/days/002-reflection/beats.test.ts && node --test scripts/dither-ink-002.test.mjs && tsx --test src/days/003-bloom/beats.test.ts && tsx --test src/days/004-wind/beats.test.ts",
     "render-001": "remotion render Day001-16x9 out/001-16x9.mp4 && remotion render Day001-4x5 out/001-4x5.mp4 && remotion render Day001-9x16 out/001-9x16.mp4 && remotion still Day001-4x5 --frame=352 out/001-card.png && remotion still Day001-Hunt out/001-hunt.png && remotion still Day001-HuntShop out/001-hunt-shop.png && remotion still Day001-HuntShop-Story out/001-hunt-shop-story.png",
     "render-002": "remotion render Day002-16x9 out/002-16x9.mp4 && remotion render Day002-4x5 out/002-4x5.mp4 && remotion render Day002-9x16 out/002-9x16.mp4 && remotion still Day002-4x5 --frame=352 out/002-card.png && remotion still Day002-Hunt out/002-hunt.png && remotion still Day002-HuntShop out/002-hunt-shop.png && remotion still Day002-HuntShop-Story out/002-hunt-shop-story.png",
     "render-003": "remotion render Day003-16x9 out/003-16x9.mp4 && remotion render Day003-4x5 out/003-4x5.mp4 && remotion render Day003-9x16 out/003-9x16.mp4 && remotion still Day003-4x5 --frame=352 out/003-card.png && remotion still Day003-Hunt out/003-hunt.png && remotion still Day003-HuntShop out/003-hunt-shop.png && remotion still Day003-HuntShop-Story out/003-hunt-shop-story.png",
+    "render-004": "remotion render Day004-16x9 out/004-16x9.mp4 && remotion render Day004-4x5 out/004-4x5.mp4 && remotion render Day004-9x16 out/004-9x16.mp4 && remotion still Day004-4x5 --frame=352 out/004-card.png && remotion still Day004-Hunt out/004-hunt.png && remotion still Day004-HuntShop out/004-hunt-shop.png && remotion still Day004-HuntShop-Story out/004-hunt-shop-story.png",
     "print-001": "remotion still Day001-16x9 out/001-canvas-print-30x20.png --frame=352 --width=9000 --height=6000 --overwrite",
     "print-002": "remotion still Day002-16x9 out/002-canvas-print-30x20.png --frame=352 --width=9000 --height=6000 --overwrite",
-    "print-003": "remotion still Day003-16x9 out/003-canvas-print-30x20.png --frame=352 --width=9000 --height=6000 --overwrite"
+    "print-003": "remotion still Day003-16x9 out/003-canvas-print-30x20.png --frame=352 --width=9000 --height=6000 --overwrite",
+    "print-004": "remotion still Day004-16x9 out/004-canvas-print-30x20.png --frame=352 --width=9000 --height=6000 --overwrite"
   },
   "dependencies": {
     "@paper-design/shaders-react": "0.0.76",
