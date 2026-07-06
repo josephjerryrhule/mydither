@@ -5,15 +5,15 @@
   },
   "line": {
     "x": 76,
-    "y": 928,
+    "y": 926,
     "width": 920,
-    "height": 29
+    "height": 31
   },
   "dot": {
-    "x": 510,
+    "x": 516,
     "y": 909,
-    "width": 43,
-    "height": 52
+    "width": 31,
+    "height": 23
   },
   "reflection": {
     "x": 511,

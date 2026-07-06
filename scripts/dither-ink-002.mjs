@@ -1,10 +1,10 @@
 // scripts/dither-ink-002.mjs
 // Pixel-perfect extraction for 002 / reflection. The drawing's own pixels,
 // keyed + ordered-Bayer dithered, split into line / dot / reflection sprites.
-// Cuts are DERIVED from structure (line = the wide rows; dot = the centered
-// blob riding the line; reflection = the narrow trail below), not hand-placed.
-// The dot's columns are punched out of the line sprite so the dot can drop into
-// the gap and seat seamlessly (ink over ink) on landing.
+// Cuts are DERIVED from structure (line = the wide rows; dot = the circle
+// sitting above the line; reflection = the narrow trail below), not hand-placed.
+// The dot is circle-only (no line pixels). The line is the full continuous
+// horizon (no punched hole).
 import sharp from 'sharp';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
@@ -81,7 +81,7 @@ for (let y = dotTop; y < lb0; y++)
 if (dotHi < 0) throw new Error('no dot found above the line band');
 const dotColLo = Math.max(0, dotLo - DOT_PAD);
 const dotColHi = Math.min(W - 1, dotHi + DOT_PAD);
-const dotBottom = lb1 + 4; // include the circle's lower arc that rides the line
+// dot is circle-only: rows above the line band, no line pixels underneath
 
 // REFLECTION = ink strictly below the line band
 const reflTop = lb1 + 1;
@@ -104,15 +104,12 @@ const bbox = (pred) => {
 };
 
 // predicates
-const isDot = (x, y) => x >= dotColLo && x <= dotColHi && y >= dotTop && y <= dotBottom;
-// reflection descends directly from the dot/line intersection, so its column
-// band is the same one punched out of the line for the dot (not the full row
-// width) — this is what keeps it a narrow trail instead of grabbing the wide
-// antialiased tail of the line itself just below the line band.
+// dot = circle only, above the line band
+const isDot = (x, y) => x >= dotColLo && x <= dotColHi && y >= dotTop && y < lb0;
+// reflection = the narrow centered trail below the line
 const isReflection = (x, y) => y >= reflTop && x >= dotColLo && x <= dotColHi;
-// line = the line-band rows, EXCLUDING the punched dot columns and the reflection
-const isLine = (x, y) =>
-  y >= lb0 - MARGIN && y <= lb1 + 4 && !(x >= dotColLo && x <= dotColHi) && y < reflTop;
+// line = the full continuous horizon, no columns punched out
+const isLine = (x, y) => y >= lb0 - MARGIN && y <= lb1 + MARGIN && y < reflTop;
 
 const dotBox = bbox(isDot);
 const reflBox = bbox(isReflection);

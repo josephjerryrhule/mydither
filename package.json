@@ -5,8 +5,10 @@
   "scripts": {
     "studio": "remotion studio",
     "prepare-001": "node scripts/dither-ink.mjs && tsx scripts/dither-label.mts && tsx scripts/dither-hunt.mts",
-    "test": "tsx --test src/days/001-branch/beats.test.ts && node --test scripts/dither-ink.test.mjs",
-    "render-001": "remotion render Day001-16x9 out/001-16x9.mp4 && remotion render Day001-4x5 out/001-4x5.mp4 && remotion render Day001-9x16 out/001-9x16.mp4 && remotion still Day001-4x5 --frame=352 out/001-card.png && remotion still Day001-Hunt out/001-hunt.png && remotion still Day001-HuntShop out/001-hunt-shop.png && remotion still Day001-HuntShop-Story out/001-hunt-shop-story.png"
+    "prepare-002": "node scripts/dither-ink-002.mjs && tsx scripts/dither-label-002.mts && tsx scripts/dither-hunt-002.mts",
+    "test": "tsx --test src/days/001-branch/beats.test.ts && node --test scripts/dither-ink.test.mjs && tsx --test src/days/002-reflection/beats.test.ts && node --test scripts/dither-ink-002.test.mjs",
+    "render-001": "remotion render Day001-16x9 out/001-16x9.mp4 && remotion render Day001-4x5 out/001-4x5.mp4 && remotion render Day001-9x16 out/001-9x16.mp4 && remotion still Day001-4x5 --frame=352 out/001-card.png && remotion still Day001-Hunt out/001-hunt.png && remotion still Day001-HuntShop out/001-hunt-shop.png && remotion still Day001-HuntShop-Story out/001-hunt-shop-story.png",
+    "render-002": "remotion render Day002-16x9 out/002-16x9.mp4 && remotion render Day002-4x5 out/002-4x5.mp4 && remotion render Day002-9x16 out/002-9x16.mp4 && remotion still Day002-4x5 --frame=352 out/002-card.png && remotion still Day002-Hunt out/002-hunt.png && remotion still Day002-HuntShop out/002-hunt-shop.png && remotion still Day002-HuntShop-Story out/002-hunt-shop-story.png"
   },
   "dependencies": {
     "@paper-design/shaders-react": "0.0.76",
