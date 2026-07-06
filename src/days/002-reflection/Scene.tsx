@@ -15,6 +15,9 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
   useInkPreload();
   const frame = useCurrentFrame();
   const { width: renderW, height: renderH } = useVideoConfig();
+
+  // Print detection (width = 9000, height = 6000 for 30x20 print canvas)
+  const isPrint = renderH > 2000;
   
   // Calculate relative layout scale based on the actual render viewport height
   // (e.g. if rendering a 16:9 composition at 9000x6000 print size, scaleFactor is 6000 / 1080 = 5.555)
@@ -27,7 +30,28 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: PALETTE.paper, overflow: 'hidden' }}>
-      <DitherLayer scale={scaleFactor} />
+      {/* 
+        WebGL Dither Background:
+        To keep the dither texture spacious and identical to the video (not compacted/dense),
+        we render the shader natively at 1920x1080 with size={2} and upscale it using CSS
+        pixelated interpolation.
+      */}
+      <div
+        style={{
+          position: 'absolute',
+          left: (renderW - 1920 * scaleFactor) / 2,
+          top: 0,
+          width: 1920,
+          height: 1080,
+          transform: `scale(${scaleFactor})`,
+          transformOrigin: 'top left',
+          imageRendering: 'pixelated',
+          overflow: 'hidden',
+        }}
+      >
+        <DitherLayer scale={1} />
+      </div>
+
       <div
         style={{
           position: 'absolute',
@@ -47,7 +71,8 @@ export const Scene = ({ comp }: { comp: CompSize }) => {
             transformOrigin: '50% 50%',
           }}
         >
-          <Secret />
+          {/* Hide the treasure-hunt secret glyph on print gallery versions */}
+          {!isPrint && <Secret />}
           <Horizon />
           <Dot />
           <Reflection />
