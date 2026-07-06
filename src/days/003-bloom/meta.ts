@@ -14,8 +14,8 @@ export const META: Meta = {
   id: '003',
   title: '003 / bloom',
   message: 'opening is a patient work: to bloom is to show your center.',
-  // O sits in the upper right quadrant of the screen
-  secret: { char: 'O', xPct: 0.65, yPct: 0.27, sizePx: 96 },
+  // O sits in the middle-left margin, clear of the drawing and placard
+  secret: { char: 'O', xPct: 0.15, yPct: 0.45, sizePx: 96 },
   igCaption: [
     '003 — bloom.',
     '',
