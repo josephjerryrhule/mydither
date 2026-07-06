@@ -14,6 +14,12 @@ export const BEATS = {
   stillFrame: 352,
   stem: { start: 20, end: 120 },
   wind: { start: 100, end: 240 },
+  seeds: [
+    { start: 160, end: 250 }, // Seed 1 (middle-left)
+    { start: 140, end: 230 }, // Seed 2 (middle-right)
+    { start: 120, end: 210 }, // Seed 3 (rightmost, closest)
+    { start: 180, end: 270 }, // Seed 4 (leftmost, furthest)
+  ],
   label: { start: 300, end: 345 },
 };
 
@@ -27,10 +33,31 @@ export function windProgress(frame: number): number {
   return easeInOutCubic(norm(frame, BEATS.wind.start, BEATS.wind.end));
 }
 
-// Bending skew angle (in degrees). The stem bends to the right under left-to-right wind.
+// Bending skew angle (in degrees). The stem bends to the left under right-to-left wind.
+// In the new artwork, the stem starts at the bottom-right and curves leftwards,
+// so the right-to-left wind bends it further leftwards (negative angle).
 export function stemSkewX(frame: number): number {
   const w = windProgress(frame);
-  return interpolate(w, [0, 1], [0, 7]); // bends up to 7 degrees rightwards
+  return interpolate(w, [0, 1], [0, -7]); // bends up to -7 degrees leftwards
+}
+
+// Horizontal flow offset for background wind swooshes (moves right-to-left, settling at 0)
+export function windFlowOffset(frame: number): number {
+  if (frame < BEATS.wind.start) return 150; // starts shifted right
+  const p = norm(frame, BEATS.wind.start, BEATS.stillFrame);
+  return interpolate(easeOutCubic(p), [0, 1], [150, 0]); // sweeps leftwards to 0
+}
+
+// Individual seed drift progress (0 = at flower head, 1 = at final drawn position)
+export function seedProgress(frame: number, seedIdx: number): number {
+  const s = BEATS.seeds[seedIdx];
+  return easeOutCubic(norm(frame, s.start, s.end));
+}
+
+// Seed opacity (starts at 0 when hidden, fades in to 1 as it detaches)
+export function seedOpacity(frame: number, seedIdx: number): number {
+  const s = BEATS.seeds[seedIdx];
+  return norm(frame, s.start, s.start + 15);
 }
 
 // Gallery placard text fade-in

@@ -6,25 +6,28 @@ import {
   stemGrowProgress,
   stemSkewX,
   windProgress,
+  windFlowOffset,
+  seedProgress,
+  seedOpacity,
 } from './beats';
-
-// Preload handle to ensure images are fully loaded before rendering frames
-let resolvePreload: () => void;
-const preloadPromise = new Promise<void>((resolve) => {
-  resolvePreload = resolve;
-});
 
 export function useInkPreload() {
   useEffect(() => {
+    // Call delayRender inside useEffect when component is mounted, avoiding module-level timeout
+    const handle = delayRender('preload-wind-ink');
     const urls = [
       staticFile('004/stem.png'),
       staticFile('004/wind.png'),
+      staticFile('004/seed1.png'),
+      staticFile('004/seed2.png'),
+      staticFile('004/seed3.png'),
+      staticFile('004/seed4.png'),
     ];
     let loaded = 0;
     const handleLoad = () => {
       loaded++;
       if (loaded === urls.length) {
-        resolvePreload();
+        continueRender(handle);
       }
     };
     urls.forEach((url) => {
@@ -38,15 +41,28 @@ export function useInkPreload() {
 
 export const Wind = () => {
   const frame = useCurrentFrame();
-  const { stem, wind } = drawing;
+  const { stem, wind, seeds } = drawing;
 
   const stemProgress = stemGrowProgress(frame);
   const wProgress = windProgress(frame);
+  const wOffset = windFlowOffset(frame);
   const skewX = stemSkewX(frame);
 
-  // The base of the stem is around x=280, y=1350 in the unscaled canvas
-  const stemBaseX = 280;
-  const stemBaseY = 1350;
+  // The base of the stem is around x=620, y=1055 in the unscaled canvas
+  const stemBaseX = 620;
+  const stemBaseY = 1055;
+
+  // The origin point from which seeds detach (the bending flower head)
+  const staticOriginX = 460;
+  const staticOriginY = 380;
+
+  const angleRad = (skewX * Math.PI) / 180;
+  const cos = Math.cos(angleRad);
+  const sin = Math.sin(angleRad);
+
+  // Rotate static origin around stem base dynamically as it bends
+  const originX = stemBaseX + (staticOriginX - stemBaseX) * cos - (staticOriginY - stemBaseY) * sin;
+  const originY = stemBaseY + (staticOriginX - stemBaseX) * sin + (staticOriginY - stemBaseY) * cos;
 
   return (
     <svg
@@ -73,32 +89,19 @@ export const Wind = () => {
             fill="white"
           />
         </mask>
-
-        {/* Left-to-right wipe mask for the sweeping wind swooshes */}
-        <mask id="wind-sweep-004" maskUnits="userSpaceOnUse">
-          <rect width={1080} height={1920} fill="black" />
-          <rect
-            x={wind.left - 20}
-            y={wind.top - 20}
-            width={(wind.width + 40) * wProgress}
-            height={wind.height + 40}
-            fill="white"
-          />
-        </mask>
       </defs>
 
-      {/* Wind swooshes in the background */}
+      {/* Wind swooshes in the background, sliding leftwards and fading in */}
       <image
         href={staticFile('004/wind.png')}
-        x={wind.left}
+        x={wind.left + wOffset}
         y={wind.top}
         width={wind.width}
         height={wind.height}
-        mask="url(#wind-sweep-004)"
-        style={{ opacity: 0.85 }} // slightly softer ink opacity for background wind swooshes
+        style={{ opacity: wProgress * 0.85 }}
       />
 
-      {/* Main plant stem and flower head, bending to the right */}
+      {/* Main plant stem and flower head, bending to the left */}
       <g transform={`rotate(${skewX}, ${stemBaseX}, ${stemBaseY})`}>
         <image
           href={staticFile('004/stem.png')}
@@ -109,12 +112,35 @@ export const Wind = () => {
           mask="url(#stem-grow-004)"
         />
       </g>
+
+      {/* Floating Seeds flying from the bending flower head to their drawn positions */}
+      {seeds.map((seed, i) => {
+        const p = seedProgress(frame, i);
+        const opacity = seedOpacity(frame, i);
+
+        // Interpolate position from the flower head origin to final drawn coordinate
+        const x = originX + (seed.left - originX) * p;
+        const y = originY + (seed.top - originY) * p;
+
+        // Add a slight spin/rotation to the seeds as they fly
+        const seedRotation = (1 - p) * -45;
+
+        return (
+          <image
+            key={i}
+            href={staticFile(`004/seed${i + 1}.png`)}
+            x={x}
+            y={y}
+            width={seed.width}
+            height={seed.height}
+            style={{
+              opacity,
+              transform: `rotate(${seedRotation}deg)`,
+              transformOrigin: `${x + seed.width / 2}px ${y + seed.height / 2}px`,
+            }}
+          />
+        );
+      })}
     </svg>
   );
 };
-
-// Wait for preload before Remotion rendering
-const delayHandle = delayRender();
-preloadPromise.then(() => {
-  continueRender(delayHandle);
-});

@@ -1,9 +1,9 @@
 // scripts/dither-ink-004.mjs
 // Pixel-perfect extraction for Day 004 / Wind.
-// Takes assets/004-wind-source.jpg, applies ordered-Bayer dithering,
-// and splits the drawing into:
+// Splits the drawing into:
 // - stem.png (the main plant stem and flower head)
-// - wind.png (the horizontal sweeping wind current lines)
+// - wind.png (horizontal sweeping wind current lines)
+// - seed1.png, seed2.png, seed3.png, seed4.png (four seeds flying left)
 import sharp from 'sharp';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
@@ -16,7 +16,6 @@ const INK_LUM = 80;    // clean ink threshold
 const GATE_LO = 0.15;
 const GATE_HI = 0.85;
 
-// Clean gate to filter any vignetting/shadow noise on outer margins
 const CONTENT_X0 = 50;
 const CONTENT_X1 = 1030;
 const CONTENT_Y0 = 200;
@@ -41,7 +40,7 @@ const { data, info } = await sharp(SRC)
   .toBuffer({ resolveWithObject: true });
 const { width: W, height: H, channels: C } = info;
 
-// Step 1: Binarize the drawing only inside the content gate
+// Step 1: Binarize the drawing
 const ink = new Uint8Array(W * H);
 for (let y = CONTENT_Y0; y < CONTENT_Y1; y++) {
   for (let x = CONTENT_X0; x < CONTENT_X1; x++) {
@@ -55,22 +54,29 @@ for (let y = CONTENT_Y0; y < CONTENT_Y1; y++) {
   }
 }
 
-// Step 2: Plant classification function
+// Classifiers
 function isPlantPixel(x, y) {
-  // Flower head box
-  if (y >= 260 && y <= 430 && x >= 580 && x <= 750) return true;
-  // Diagonal stem corridor from (270, 930) to (630, 310)
-  const yMin = 310, yMax = 930;
-  const xMin = 270, xMax = 630;
+  if (y >= 260 && y <= 450 && x >= 400 && x <= 560) return true;
+  const yMin = 360, yMax = 930;
+  const xMin = 500, xMax = 760;
   if (y >= yMin && y <= yMax) {
-    const t = (y - yMin) / (yMax - yMin); // 0 at top, 1 at bottom
-    const expectedX = xMin + (xMax - xMin) * (1 - t); // diagonal line
-    if (Math.abs(x - expectedX) < 18) return true;
+    const t = (y - yMin) / (yMax - yMin);
+    const expectedX = xMin + (xMax - xMin) * t;
+    if (Math.abs(x - expectedX) < 22) return true;
   }
   return false;
 }
 
-// Step 3: Extract regions using coordinate classifiers
+// Bounding boxes for individual seeds
+function isSeed1(x, y) { return x >= 315 && x <= 355 && y >= 515 && y <= 555; }
+function isSeed2(x, y) { return x >= 365 && x <= 410 && y >= 465 && y <= 495; }
+function isSeed3(x, y) { return x >= 385 && x <= 420 && y >= 425 && y <= 450; }
+function isSeed4(x, y) { return x >= 260 && x <= 335 && y >= 555 && y <= 580; }
+
+function isAnySeed(x, y) {
+  return isSeed1(x, y) || isSeed2(x, y) || isSeed3(x, y) || isSeed4(x, y);
+}
+
 async function saveSprite(name, filterFn) {
   let minX = W, maxX = -1, minY = H, maxY = -1;
   
@@ -126,11 +132,16 @@ async function saveSprite(name, filterFn) {
 mkdirSync(OUT_DIR, { recursive: true });
 
 const stemMeta = await saveSprite('stem', (x, y) => isPlantPixel(x, y));
-const windMeta = await saveSprite('wind', (x, y) => !isPlantPixel(x, y));
+const windMeta = await saveSprite('wind', (x, y) => !isPlantPixel(x, y) && !isAnySeed(x, y));
+const seed1Meta = await saveSprite('seed1', (x, y) => isSeed1(x, y));
+const seed2Meta = await saveSprite('seed2', (x, y) => isSeed2(x, y));
+const seed3Meta = await saveSprite('seed3', (x, y) => isSeed3(x, y));
+const seed4Meta = await saveSprite('seed4', (x, y) => isSeed4(x, y));
 
 const metadata = {
   stem: stemMeta,
   wind: windMeta,
+  seeds: [seed1Meta, seed2Meta, seed3Meta, seed4Meta],
 };
 
 writeFileSync(`${OUT_DIR}/drawing.json`, JSON.stringify(metadata, null, 2));
