@@ -13,7 +13,7 @@ export type Meta = {
 export const META: Meta = {
   id: '002',
   title: '002 / reflection',
-  message: 'part 2: nourished by reflection, it learns to stand still.',
+  message: 'a mark on the horizon, and the water’s reply.',
   // R sits in the open field above the line (varied left vs 001’s right).
   // yPct 0.27 (not lower): at 0.24 the 96px glyph clips the top on the 16:9 crop
   // (offsetY -420) — lesson carried from 001.
@@ -30,12 +30,13 @@ export const META: Meta = {
     '#mydither #generativeart #minimalism #creativecoding #remotion #dither #printdesign #motiondesign #monochrome #reflection',
   ].join('\n'),
   xCaption: [
-    '002 / reflection.',
-    'part 2: nourished by reflection, it learns to stand still.',
+    '002 / reflection — day two of a daily motion practice.',
+    'achieved using relative pixel scans for clean reflection pinch and vertical leaks.',
     '',
-    'each print contains a hidden letter. six days, one word. collect them all.',
+    'the hunt: one letter hides in each piece’s grain. six days, in order.',
+    'day six, DM the word on IG — shops are holding coupons + gifts.',
     '',
-    '#mydither #generativeart #design',
+    'day 2 of 6.',
   ].join('\n'),
   xThread: [
     [

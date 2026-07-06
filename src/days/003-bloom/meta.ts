@@ -13,7 +13,7 @@ export type Meta = {
 export const META: Meta = {
   id: '003',
   title: '003 / bloom',
-  message: 'part 3: with patience, the bud opens, showing its center.',
+  message: 'opening is a patient work: to bloom is to show your center.',
   // O sits in the middle-right margin, clear of the drawing and placard
   secret: { char: 'O', xPct: 0.80, yPct: 0.55, sizePx: 96 },
   igCaption: [
@@ -28,12 +28,13 @@ export const META: Meta = {
     '#mydither #generativeart #minimalism #creativecoding #remotion #dither #printdesign #motiondesign #monochrome #bloom',
   ].join('\n'),
   xCaption: [
-    '003 / bloom.',
-    'part 3: with patience, the bud opens, showing its center.',
+    '003 / bloom — day three of a daily motion practice.',
+    'using staggered vector masks on transparent PNG channels for calligraphic ink sweeps.',
     '',
-    'each print contains a hidden letter. six days, one word. collect them all.',
+    'the hunt: one letter hides in each piece’s grain. six days, in order.',
+    'day six, DM the word on IG — shops are holding coupons + gifts.',
     '',
-    '#mydither #generativeart #design',
+    'day 3 of 6.',
   ].join('\n'),
   xThread: [
     [

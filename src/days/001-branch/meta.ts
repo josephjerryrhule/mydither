@@ -13,7 +13,7 @@ export type Meta = {
 export const META: Meta = {
   id: '001',
   title: '001 / branch',
-  message: 'part 1: a single shoot rises, branching upward to find the light.',
+  message: 'one line up, seven honest detours. the dot is tomorrow.',
   secret: { char: 'G', xPct: 0.70, yPct: 0.27, sizePx: 96 },
   igCaption: [
     '001 — branch.',
@@ -27,12 +27,13 @@ export const META: Meta = {
     '#mydither #generativeart #minimalism #creativecoding #remotion #dither #printdesign #motiondesign #monochrome #zenart',
   ].join('\n'),
   xCaption: [
-    '001 / branch.',
-    'part 1: a single shoot rises, branching upward to find the light.',
+    '001 / branch — day one of a daily motion practice.',
+    'built with @paper dithering shaders + @remotion, deterministic to the frame.',
     '',
-    'each print contains a hidden letter. six days, one word. collect them all.',
+    'the hunt: one letter hides in each piece’s grain. six days, in order.',
+    'day six, DM the word on IG — shops are holding coupons + gifts.',
     '',
-    '#mydither #generativeart #design',
+    'day 1 of 6.',
   ].join('\n'),
   xThread: [
     [
