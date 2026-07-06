@@ -29,6 +29,7 @@ export const META: Meta = {
   ].join('\n'),
   xCaption: [
     '003 / bloom — day three of a daily motion practice.',
+    'built with @paper dithering shaders + @remotion, deterministic to the frame.',
     'using staggered vector masks on transparent PNG channels for calligraphic ink sweeps.',
     '',
     'the hunt: one letter hides in each piece’s grain. six days, in order.',

@@ -31,6 +31,7 @@ export const META: Meta = {
   ].join('\n'),
   xCaption: [
     '002 / reflection — day two of a daily motion practice.',
+    'built with @paper dithering shaders + @remotion, deterministic to the frame.',
     'achieved using relative pixel scans for clean reflection pinch and vertical leaks.',
     '',
     'the hunt: one letter hides in each piece’s grain. six days, in order.',
@@ -44,7 +45,7 @@ export const META: Meta = {
       'zoom in and whisper “enhance” — still works.',
       '',
       'full rules + the DM box live on IG →',
-      '[ig post link]',
+      'https://www.instagram.com/p/Dac27_QCIpr/?igsh=MXJoeHphZXMzenRmYw==',
     ].join('\n'),
   ],
 };

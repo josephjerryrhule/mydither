@@ -27,6 +27,7 @@ export const META: Meta = {
   ].join('\n'),
   xCaption: [
     '004 / wind — day four of a daily motion practice.',
+    'built with @paper dithering shaders + @remotion, deterministic to the frame.',
     'separating layers with a diagonal spatial classifier to skew the stem and sweep the currents.',
     '',
     'the hunt: one letter hides in each piece’s grain. six days, in order.',
